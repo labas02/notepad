@@ -6,31 +6,25 @@ import android.content.Context
 import android.content.res.AssetManager
 import android.graphics.Color
 import android.os.Bundle
+import android.view.Gravity
 import android.view.MenuItem
 import android.view.View
-import android.widget.Button
+import android.widget.CheckBox
 import android.widget.FrameLayout
-import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.PopupMenu
 import android.widget.ScrollView
 import android.widget.TextView
+import androidx.activity.result.registerForActivityResult
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
-import androidx.core.view.marginTop
-import androidx.core.view.setMargins
-import androidx.core.view.setPadding
 import java.io.BufferedReader
-import java.io.BufferedWriter
 import java.io.File
-import java.io.FileInputStream
 import java.io.FileOutputStream
-import java.io.FileWriter
 import java.io.IOException
 import java.io.InputStreamReader
 import java.nio.charset.Charset
-import java.sql.Struct
 
 class MainActivity : AppCompatActivity() {
     @SuppressLint("SetTextI18n")
@@ -67,7 +61,7 @@ class MainActivity : AppCompatActivity() {
                 ConstraintLayout.LayoutParams.MATCH_CONSTRAINT
             )
         }
-        val daily_layout = FrameLayout(this).apply {
+        val daily_layout = LinearLayout(this).apply {
             id = View.generateViewId()
             setBackgroundColor(Color.MAGENTA)
             layoutParams = ConstraintLayout.LayoutParams(
@@ -76,18 +70,39 @@ class MainActivity : AppCompatActivity() {
             )
         }
 
-        val daily_quest_gallery = FrameLayout(this).apply {
+        val left_arrow = ConstraintLayout(this).apply {
             id = View.generateViewId()
-            setBackgroundColor(Color.BLACK)
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.MATCH_PARENT
-            ).apply {
-                setMargins(20,20,20,20)
-            }
-
+            layoutParams = ConstraintLayout.LayoutParams(
+                ConstraintLayout.LayoutParams.MATCH_CONSTRAINT,
+                ConstraintLayout.LayoutParams.MATCH_CONSTRAINT
+            )
         }
+
+        val right_arrow = ConstraintLayout(this).apply {
+            id = View.generateViewId()
+            layoutParams = ConstraintLayout.LayoutParams(
+                ConstraintLayout.LayoutParams.MATCH_CONSTRAINT,
+                ConstraintLayout.LayoutParams.MATCH_CONSTRAINT
+            )
+        }
+        val daily_quest_gallery = LinearLayout(this).apply {
+            id = View.generateViewId()
+            gravity = Gravity.CENTER
+            layoutParams = ConstraintLayout.LayoutParams(
+                ConstraintLayout.LayoutParams.MATCH_PARENT,
+                ConstraintLayout.LayoutParams.MATCH_PARENT
+            )
+        }
+        val t = crete_daily_tasks(data)
+
+        daily_quest_gallery.addView(t[0].daily1)
+        daily_quest_gallery.addView(t[0].daily2)
+        daily_quest_gallery.addView(t[0].daily3)
+
+        daily_layout.addView(left_arrow)
         daily_layout.addView(daily_quest_gallery)
+        daily_layout.addView(right_arrow)
+
 
         val button_layout = ConstraintLayout(this).apply{
             id = View.generateViewId()
@@ -96,7 +111,7 @@ class MainActivity : AppCompatActivity() {
                 (resources.displayMetrics.widthPixels * 0.1f).toInt(),
                 (resources.displayMetrics.heightPixels * 0.05f).toInt()
             )
-            setOnClickListener({
+            setOnClickListener {
                 val popupMenu = PopupMenu(this@MainActivity, it)
 
                 // Dynamically add menu items to the PopupMenu
@@ -112,21 +127,24 @@ class MainActivity : AppCompatActivity() {
                             // Handle "Item 1" click
                             true
                         }
+
                         2 -> {
                             // Handle "Item 2" click
                             true
                         }
+
                         3 -> {
                             // Handle "Item 3" click
                             true
                         }
+
                         else -> false
                     }
                 }
 
                 // Show the menu
                 popupMenu.show()
-            })
+            }
         }
 topLayout.addView(button_layout)
 
@@ -186,13 +204,27 @@ topLayout.addView(button_layout)
         val set = ConstraintSet()
         set.clone(constraintLayout)
 
+        // arrows
+        set.constrainPercentWidth(left_arrow.id,0.05f)
+        set.constrainPercentHeight(left_arrow.id,0.05f)
+        set.connect(left_arrow.id,ConstraintSet.TOP,topLayout.id,ConstraintSet.BOTTOM)
+        set.connect(left_arrow.id,ConstraintSet.BOTTOM,bottomLeftLayout.id,ConstraintSet.TOP)
+        set.connect(left_arrow.id,ConstraintSet.START,daily_layout.id, ConstraintSet.START)
+
+        set.constrainPercentWidth(right_arrow.id,0.05f)
+        set.constrainPercentHeight(right_arrow.id,0.05f)
+        set.connect(right_arrow.id,ConstraintSet.TOP,topLayout.id,ConstraintSet.BOTTOM)
+        set.connect(right_arrow.id,ConstraintSet.BOTTOM,bottomLeftLayout.id,ConstraintSet.TOP)
+        set.connect(right_arrow.id,ConstraintSet.END,daily_layout.id,ConstraintSet.END)
+
         // Top layout takes 20% height
         set.constrainPercentHeight(topLayout.id, 0.05f)
         set.connect(topLayout.id, ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP)
         set.connect(topLayout.id, ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START)
         set.connect(topLayout.id, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
 
-        set.constrainPercentHeight(daily_layout.id,0.13f)
+        set.constrainPercentHeight(daily_layout.id,0.20f)
+        set.constrainPercentWidth(daily_layout.id,0.80f)
         set.connect(daily_layout.id,ConstraintSet.TOP,topLayout.id,ConstraintSet.BOTTOM)
         set.connect(daily_layout.id,ConstraintSet.START,ConstraintSet.PARENT_ID,ConstraintSet.START)
         set.connect(daily_layout.id,ConstraintSet.END,ConstraintSet.PARENT_ID,ConstraintSet.END)
@@ -231,20 +263,24 @@ topLayout.addView(button_layout)
     }
 
     // Function to read content from a file
-    private fun readFromFile(context: Context, fileName: String): String {
-        var content = ""
+    private fun readFromFile(context: Context,fileName: String): List<List<String>> {
+        val result = mutableListOf<List<String>>()
         try {
-            // Open the file input stream
-            val fileInputStream: FileInputStream = context.openFileInput(fileName)
-            val byteArray = ByteArray(fileInputStream.available())
-            fileInputStream.read(byteArray)
-            content = String(byteArray, Charset.defaultCharset()) // Convert byte array to string
+            // Open the CSV file from assets
+            val inputStream = context.assets.open(fileName)
+            val reader = BufferedReader(InputStreamReader(inputStream))
 
-            fileInputStream.close()  // Close the file stream
-        } catch (e: IOException) {
-            e.printStackTrace()  // Handle any errors
+            // Read each line and split by commas
+            reader.useLines { lines ->
+                lines.forEach { line ->
+                    val values = line.split(",") // Split by commas
+                    result.add(values)
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
-        return content
+        return result
     }
 
     data class daily_layouts_set(
@@ -253,13 +289,90 @@ topLayout.addView(button_layout)
         val daily3: LinearLayout
     )
 
-    fun crete_daily_tasks(){
+
+    private fun crete_daily_tasks(data:MutableList<List<String>>): MutableList<daily_layouts_set> {
         val daily = mutableListOf<daily_layouts_set>()
-        val tmp1 = LinearLayout(this).apply {  };
-        val tmp2 = LinearLayout(this).apply {  };
-        val tmp3 = LinearLayout(this).apply {  };
-        daily.add(daily_layouts_set(tmp1,tmp3,tmp3))
-        return
+        var width_regulation = 4.5
+        var height_regulation = 7.8
+
+        val fr = readFromFile(applicationContext,"daily.csv")
+
+        val tmp1 = LinearLayout(this).apply {
+            setBackgroundColor(Color.GRAY)
+            orientation = LinearLayout.VERTICAL
+            layoutParams = LinearLayout.LayoutParams(
+                (resources.displayMetrics.widthPixels / width_regulation).toInt(),
+                (resources.displayMetrics.heightPixels/height_regulation).toInt()
+            ).apply {
+                setMargins(20,20,20,20)
+                setGravity(Gravity.CENTER)
+            }
+        }
+        tmp1.addView(TextView(this).apply {
+            text = data[0].component2()
+            textSize = 35F
+            textAlignment = View.TEXT_ALIGNMENT_CENTER
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                150
+            )
+        })
+        tmp1.addView(CheckBox(this).apply {
+            text = "complete"
+            isChecked = false
+        })
+
+        val tmp2 = LinearLayout(this).apply {
+            setBackgroundColor(Color.GRAY)
+            orientation = LinearLayout.VERTICAL
+            layoutParams = LinearLayout.LayoutParams(
+                (resources.displayMetrics.widthPixels / width_regulation).toInt(),
+                (resources.displayMetrics.heightPixels/height_regulation).toInt()
+            ).apply {
+                setMargins(20,20,20,20)
+                setGravity(Gravity.CENTER)
+            }
+        }
+        tmp2.addView(TextView(this).apply {
+            text = data[0].component2()
+            textSize = 35F
+            textAlignment = View.TEXT_ALIGNMENT_CENTER
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                150
+            )
+        })
+        tmp2.addView(CheckBox(this).apply {
+            text = "complete"
+            isChecked = false
+        })
+
+        val tmp3 = LinearLayout(this).apply {
+            setBackgroundColor(Color.GRAY)
+            orientation = LinearLayout.VERTICAL
+            layoutParams = LinearLayout.LayoutParams(
+                (resources.displayMetrics.widthPixels/width_regulation).toInt(),
+                (resources.displayMetrics.heightPixels/height_regulation).toInt()
+            ).apply {
+                setMargins(20,20,20,20)
+                setGravity(Gravity.CENTER)
+            }
+        }
+        tmp3.addView(TextView(this).apply {
+            text = data[0].component2()
+            textSize = 35F
+            textAlignment = View.TEXT_ALIGNMENT_CENTER
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                150
+            )
+        })
+        tmp3.addView(CheckBox(this).apply {
+            text = "complete"
+            isChecked = false
+        })
+        daily.add(daily_layouts_set(tmp1,tmp2,tmp3))
+        return daily
     }
 
     fun createEmptyFile(fileName: String): Boolean {
