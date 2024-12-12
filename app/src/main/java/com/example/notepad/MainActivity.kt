@@ -289,7 +289,6 @@ topLayout.addView(button_layout)
         val daily3: LinearLayout
     )
 
-
     private fun crete_daily_tasks(data:MutableList<List<String>>): MutableList<daily_layouts_set> {
         val daily = mutableListOf<daily_layouts_set>()
         var width_regulation = 4.5
