@@ -15,7 +15,6 @@ import android.widget.LinearLayout
 import android.widget.PopupMenu
 import android.widget.ScrollView
 import android.widget.TextView
-import androidx.activity.result.registerForActivityResult
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
@@ -24,25 +23,12 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.InputStreamReader
-import java.nio.charset.Charset
 
 class MainActivity : AppCompatActivity() {
     @SuppressLint("SetTextI18n")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        val assetManager: AssetManager = assets
-        val inputStream = assetManager.open("daily.csv")
-        val reader = BufferedReader(InputStreamReader(inputStream))
-        val data = mutableListOf<List<String>>()
-
-        reader.forEachLine { line ->
-            val row = line.split(",") // Split the line by commas
-            data.add(row)
-        }
-        reader.close()
-
 
         // Create a parent ConstraintLayout
         val constraintLayout = ConstraintLayout(this).apply {
@@ -93,7 +79,7 @@ class MainActivity : AppCompatActivity() {
                 ConstraintLayout.LayoutParams.MATCH_PARENT
             )
         }
-        val t = crete_daily_tasks(data)
+        val t = crete_daily_tasks()
 
         daily_quest_gallery.addView(t[0].daily1)
         daily_quest_gallery.addView(t[0].daily2)
@@ -174,7 +160,7 @@ topLayout.addView(button_layout)
         }
         for (nums in 0..50){
         val textView = TextView(this).apply {
-            text = data.toString()
+            text = "sdfsd"
             textSize = 18f
             setTextColor(Color.BLACK)
         }
@@ -262,51 +248,36 @@ topLayout.addView(button_layout)
         }
     }
 
-    // Function to read content from a file
-    private fun readFromFile(context: Context,fileName: String): List<List<String>> {
-        val result = mutableListOf<List<String>>()
-        try {
-            // Open the CSV file from assets
-            val inputStream = context.assets.open(fileName)
-            val reader = BufferedReader(InputStreamReader(inputStream))
-
-            // Read each line and split by commas
-            reader.useLines { lines ->
-                lines.forEach { line ->
-                    val values = line.split(",") // Split by commas
-                    result.add(values)
-                }
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        return result
-    }
-
     data class daily_layouts_set(
         val daily1: LinearLayout,
         val daily2: LinearLayout,
         val daily3: LinearLayout
     )
 
-    private fun crete_daily_tasks(data:MutableList<List<String>>): MutableList<daily_layouts_set> {
+    @SuppressLint("SetTextI18n")
+    private fun crete_daily_tasks(): MutableList<daily_layouts_set> {
         val daily = mutableListOf<daily_layouts_set>()
-        var width_regulation = 4.5
-        var height_regulation = 7.8
+        val width_regulation = 4.5
+        val height_regulation = 7.8
 
-        val fr = readFromFile(applicationContext,"daily.csv")
+            daily.add(create_daily_set(width_regulation,height_regulation))
+        return daily
+    }
 
-        val tmp1 = LinearLayout(this).apply {
+    fun create_daily_set(width_regulation: Double, height_regulation: Double): daily_layouts_set{
+        val data = read_from_file();
+         val tmp1 = LinearLayout(this).apply {
             setBackgroundColor(Color.GRAY)
             orientation = LinearLayout.VERTICAL
             layoutParams = LinearLayout.LayoutParams(
                 (resources.displayMetrics.widthPixels / width_regulation).toInt(),
-                (resources.displayMetrics.heightPixels/height_regulation).toInt()
+                (resources.displayMetrics.heightPixels / height_regulation).toInt()
             ).apply {
-                setMargins(20,20,20,20)
+                setMargins(20, 20, 20, 20)
                 setGravity(Gravity.CENTER)
             }
         }
+
         tmp1.addView(TextView(this).apply {
             text = data[0].component2()
             textSize = 35F
@@ -321,17 +292,20 @@ topLayout.addView(button_layout)
             isChecked = false
         })
 
+
+
         val tmp2 = LinearLayout(this).apply {
             setBackgroundColor(Color.GRAY)
             orientation = LinearLayout.VERTICAL
             layoutParams = LinearLayout.LayoutParams(
                 (resources.displayMetrics.widthPixels / width_regulation).toInt(),
-                (resources.displayMetrics.heightPixels/height_regulation).toInt()
+                (resources.displayMetrics.heightPixels / height_regulation).toInt()
             ).apply {
-                setMargins(20,20,20,20)
+                setMargins(20, 20, 20, 20)
                 setGravity(Gravity.CENTER)
             }
         }
+
         tmp2.addView(TextView(this).apply {
             text = data[0].component2()
             textSize = 35F
@@ -346,17 +320,19 @@ topLayout.addView(button_layout)
             isChecked = false
         })
 
+
         val tmp3 = LinearLayout(this).apply {
             setBackgroundColor(Color.GRAY)
             orientation = LinearLayout.VERTICAL
             layoutParams = LinearLayout.LayoutParams(
-                (resources.displayMetrics.widthPixels/width_regulation).toInt(),
-                (resources.displayMetrics.heightPixels/height_regulation).toInt()
+                (resources.displayMetrics.widthPixels / width_regulation).toInt(),
+                (resources.displayMetrics.heightPixels / height_regulation).toInt()
             ).apply {
-                setMargins(20,20,20,20)
+                setMargins(20, 20, 20, 20)
                 setGravity(Gravity.CENTER)
             }
         }
+
         tmp3.addView(TextView(this).apply {
             text = data[0].component2()
             textSize = 35F
@@ -370,8 +346,7 @@ topLayout.addView(button_layout)
             text = "complete"
             isChecked = false
         })
-        daily.add(daily_layouts_set(tmp1,tmp2,tmp3))
-        return daily
+        return daily_layouts_set(tmp1,tmp2,tmp3)
     }
 
     fun createEmptyFile(fileName: String): Boolean {
@@ -379,5 +354,19 @@ topLayout.addView(button_layout)
 
         // Create the file if it doesn't exist, returns true if created, false if already exists
         return file.createNewFile()
+    }
+
+    fun read_from_file():MutableList<List<String>>{
+        val assetManager: AssetManager = assets
+        val inputStream = assetManager.open("daily.csv")
+        val reader = BufferedReader(InputStreamReader(inputStream))
+        val data = mutableListOf<List<String>>()
+
+        reader.forEachLine { line ->
+            val row = line.split(",") // Split the line by commas
+            data.add(row)
+        }
+        reader.close()
+    return data
     }
 }
