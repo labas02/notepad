@@ -27,8 +27,14 @@ import java.io.InputStreamReader
 class MainActivity : AppCompatActivity() {
     @SuppressLint("SetTextI18n")
 
+    var daily_task_offset = 0
+    var weekly_task_offset = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        var daily_task_array = crete_tasks()
+        var weekly_task_array = crete_tasks()
 
         // Create a parent ConstraintLayout
         val constraintLayout = ConstraintLayout(this).apply {
@@ -47,47 +53,125 @@ class MainActivity : AppCompatActivity() {
                 ConstraintLayout.LayoutParams.MATCH_CONSTRAINT
             )
         }
+
         val daily_layout = LinearLayout(this).apply {
             id = View.generateViewId()
             setBackgroundColor(Color.MAGENTA)
-            layoutParams = ConstraintLayout.LayoutParams(
-                ConstraintLayout.LayoutParams.MATCH_CONSTRAINT,
-                ConstraintLayout.LayoutParams.MATCH_CONSTRAINT
-            )
-        }
-
-        val left_arrow = ConstraintLayout(this).apply {
-            id = View.generateViewId()
-            layoutParams = ConstraintLayout.LayoutParams(
-                ConstraintLayout.LayoutParams.MATCH_CONSTRAINT,
-                ConstraintLayout.LayoutParams.MATCH_CONSTRAINT
-            )
-        }
-
-        val right_arrow = ConstraintLayout(this).apply {
-            id = View.generateViewId()
-            layoutParams = ConstraintLayout.LayoutParams(
-                ConstraintLayout.LayoutParams.MATCH_CONSTRAINT,
-                ConstraintLayout.LayoutParams.MATCH_CONSTRAINT
-            )
-        }
-        val daily_quest_gallery = LinearLayout(this).apply {
-            id = View.generateViewId()
-            gravity = Gravity.CENTER
+            setHorizontalGravity(Gravity.CENTER)
             layoutParams = ConstraintLayout.LayoutParams(
                 ConstraintLayout.LayoutParams.MATCH_PARENT,
-                ConstraintLayout.LayoutParams.MATCH_PARENT
+                ConstraintLayout.LayoutParams.WRAP_CONTENT
             )
         }
-        val t = crete_daily_tasks()
 
-        daily_quest_gallery.addView(t[0].daily1)
-        daily_quest_gallery.addView(t[0].daily2)
-        daily_quest_gallery.addView(t[0].daily3)
+        val daily_quest_gallery = LinearLayout(this).apply {
+            setBackgroundColor(Color.BLACK)
+            id = View.generateViewId()
+            gravity = Gravity.CENTER
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT)
 
-        daily_layout.addView(left_arrow)
+        }
+
+        val daily_left_arrow = LinearLayout(this).apply {
+            setBackgroundColor(Color.BLUE)
+            id = View.generateViewId()
+            gravity = Gravity.START
+            layoutParams = ConstraintLayout.LayoutParams(
+                (context.resources.displayMetrics.widthPixels * 0.15).toInt(),
+                ConstraintLayout.LayoutParams.MATCH_PARENT )
+
+            setOnClickListener({
+                this@MainActivity.move_gallery(1, daily_quest_gallery,daily_task_array,1)
+            })
+
+        }
+
+        val daily_right_arrow = LinearLayout(this).apply {
+            setBackgroundColor(Color.BLUE)
+            id = View.generateViewId()
+            gravity = Gravity.START
+            layoutParams = ConstraintLayout.LayoutParams(
+                (context.resources.displayMetrics.widthPixels * 0.15).toInt(),
+                ConstraintLayout.LayoutParams.MATCH_PARENT )
+
+            setOnClickListener {
+                this@MainActivity.move_gallery(-1, daily_quest_gallery, daily_task_array,1)
+            }
+
+        }
+
+        move_gallery(0,daily_quest_gallery,daily_task_array,1)
+
+        daily_layout.addView(daily_left_arrow)
         daily_layout.addView(daily_quest_gallery)
-        daily_layout.addView(right_arrow)
+        daily_layout.addView(daily_right_arrow)
+
+        val weekly_layout = LinearLayout(this).apply {
+            id = View.generateViewId()
+            setBackgroundColor(Color.MAGENTA)
+            setHorizontalGravity(Gravity.CENTER)
+            layoutParams = ConstraintLayout.LayoutParams(
+                ConstraintLayout.LayoutParams.MATCH_PARENT,
+                ConstraintLayout.LayoutParams.WRAP_CONTENT
+            )
+        }
+
+        val weekly_quest_gallery = LinearLayout(this).apply {
+            setBackgroundColor(Color.BLACK)
+            id = View.generateViewId()
+            gravity = Gravity.CENTER
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT)
+
+        }
+
+        val weekly_left_arrow = LinearLayout(this).apply {
+            setBackgroundColor(Color.BLUE)
+            id = View.generateViewId()
+            gravity = Gravity.START
+            layoutParams = ConstraintLayout.LayoutParams(
+                (context.resources.displayMetrics.widthPixels * 0.15).toInt(),
+                ConstraintLayout.LayoutParams.MATCH_PARENT )
+
+            setOnClickListener({
+                this@MainActivity.move_gallery(1, weekly_quest_gallery,weekly_task_array,2)
+            })
+
+        }
+
+        val weekly_right_arrow = LinearLayout(this).apply {
+            setBackgroundColor(Color.BLUE)
+            id = View.generateViewId()
+            gravity = Gravity.START
+            layoutParams = ConstraintLayout.LayoutParams(
+                (context.resources.displayMetrics.widthPixels * 0.15).toInt(),
+                ConstraintLayout.LayoutParams.MATCH_PARENT )
+
+            setOnClickListener {
+                this@MainActivity.move_gallery(-1, weekly_quest_gallery, weekly_task_array,2)
+            }
+
+        }
+
+
+
+        move_gallery(0,weekly_quest_gallery,weekly_task_array,2)
+
+        weekly_layout.addView(weekly_left_arrow)
+        weekly_layout.addView(weekly_quest_gallery)
+        weekly_layout.addView(weekly_right_arrow)
+
+        val spacer = LinearLayout(this).apply {
+            id = View.generateViewId()
+            setBackgroundColor(Color.BLACK)
+            layoutParams = ConstraintLayout.LayoutParams(
+                ConstraintLayout.LayoutParams.MATCH_CONSTRAINT,
+                ConstraintLayout.LayoutParams.MATCH_CONSTRAINT
+            )
+        }
 
 
         val button_layout = ConstraintLayout(this).apply{
@@ -135,7 +219,7 @@ class MainActivity : AppCompatActivity() {
 topLayout.addView(button_layout)
 
         // Bottom-left layout
-        val bottomLeftLayout = LinearLayout(this).apply {
+        val bottom_menu = LinearLayout(this).apply {
             id = View.generateViewId()
             setBackgroundColor(Color.RED)
             layoutParams = ConstraintLayout.LayoutParams(
@@ -168,7 +252,7 @@ topLayout.addView(button_layout)
     }
         scroll.addView(linear)
 
-        bottomLeftLayout.addView(scroll)
+        bottom_menu.addView(scroll)
 
         // Bottom-right layout
         val bottomRightLayout = FrameLayout(this).apply {
@@ -183,44 +267,47 @@ topLayout.addView(button_layout)
         // Add views to the ConstraintLayout
         constraintLayout.addView(topLayout)
         constraintLayout.addView(daily_layout)
-        constraintLayout.addView(bottomLeftLayout)
-        constraintLayout.addView(bottomRightLayout)
+        constraintLayout.addView(weekly_layout)
+        constraintLayout.addView(spacer)
+        constraintLayout.addView(bottom_menu)
 
         // Define constraints
         val set = ConstraintSet()
         set.clone(constraintLayout)
 
-        // arrows
-        set.constrainPercentWidth(left_arrow.id,0.05f)
-        set.constrainPercentHeight(left_arrow.id,0.05f)
-        set.connect(left_arrow.id,ConstraintSet.TOP,topLayout.id,ConstraintSet.BOTTOM)
-        set.connect(left_arrow.id,ConstraintSet.BOTTOM,bottomLeftLayout.id,ConstraintSet.TOP)
-        set.connect(left_arrow.id,ConstraintSet.START,daily_layout.id, ConstraintSet.START)
 
-        set.constrainPercentWidth(right_arrow.id,0.05f)
-        set.constrainPercentHeight(right_arrow.id,0.05f)
-        set.connect(right_arrow.id,ConstraintSet.TOP,topLayout.id,ConstraintSet.BOTTOM)
-        set.connect(right_arrow.id,ConstraintSet.BOTTOM,bottomLeftLayout.id,ConstraintSet.TOP)
-        set.connect(right_arrow.id,ConstraintSet.END,daily_layout.id,ConstraintSet.END)
-
-        // Top layout takes 20% height
+// Top layout takes 20% height
         set.constrainPercentHeight(topLayout.id, 0.05f)
         set.connect(topLayout.id, ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP)
         set.connect(topLayout.id, ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START)
         set.connect(topLayout.id, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
-
+//daily layout
         set.constrainPercentHeight(daily_layout.id,0.20f)
-        set.constrainPercentWidth(daily_layout.id,0.80f)
+        set.constrainPercentWidth(daily_layout.id,1f)
         set.connect(daily_layout.id,ConstraintSet.TOP,topLayout.id,ConstraintSet.BOTTOM)
         set.connect(daily_layout.id,ConstraintSet.START,ConstraintSet.PARENT_ID,ConstraintSet.START)
         set.connect(daily_layout.id,ConstraintSet.END,ConstraintSet.PARENT_ID,ConstraintSet.END)
 
+//weekly layout
+        set.constrainPercentHeight(weekly_layout.id,0.20f)
+        set.constrainPercentWidth(weekly_layout.id,1f)
+        set.connect(weekly_layout.id,ConstraintSet.TOP,daily_layout.id,ConstraintSet.BOTTOM)
+        set.connect(weekly_layout.id,ConstraintSet.START,ConstraintSet.PARENT_ID,ConstraintSet.START)
+        set.connect(weekly_layout.id,ConstraintSet.END,ConstraintSet.PARENT_ID,ConstraintSet.END)
+
+        //spacer
+        set.constrainPercentWidth(spacer.id,0.20f)
+        set.constrainPercentHeight(spacer.id,0.6f)
+        set.connect(spacer.id,ConstraintSet.TOP,weekly_layout.id,ConstraintSet.BOTTOM)
+        set.connect(spacer.id,ConstraintSet.START,ConstraintSet.PARENT_ID,ConstraintSet.START)
+        set.connect(spacer.id,ConstraintSet.END,ConstraintSet.PARENT_ID,ConstraintSet.END)
         // Bottom-left layout
-        set.connect(bottomLeftLayout.id, ConstraintSet.TOP, daily_layout.id, ConstraintSet.BOTTOM)
-        set.connect(bottomLeftLayout.id, ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START)
-        set.connect(bottomLeftLayout.id, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
-        set.connect(bottomLeftLayout.id, ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM)
+        set.connect(bottom_menu.id, ConstraintSet.TOP, spacer.id, ConstraintSet.BOTTOM)
+        set.connect(bottom_menu.id, ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START)
+        set.connect(bottom_menu.id, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
+        set.connect(bottom_menu.id, ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM)
         //set.constrainPercentWidth(bottomLeftLayout.id, 0.5f) // Half the width
+
 
         // button menu
         //set.constrainPercentWidth(button_layout.id,0.2f)
@@ -248,106 +335,89 @@ topLayout.addView(button_layout)
         }
     }
 
-    data class daily_layouts_set(
-        val daily1: LinearLayout,
-        val daily2: LinearLayout,
-        val daily3: LinearLayout
+    private fun move_gallery(int: Int, quest_gallery:LinearLayout, task_array:MutableList<layouts_set>, which_array:Int) {
+        quest_gallery.removeAllViews()
+        when(which_array){
+            1 ->{
+                //daily_offset
+                daily_task_offset += int
+                val current_set = task_array[daily_task_offset]
+                quest_gallery.addView(current_set.layout1)
+                quest_gallery.addView(current_set.layout2)
+                quest_gallery.addView(current_set.layout3)
+            }
+            2 ->{
+                //weekly_offset
+                weekly_task_offset += int
+                val current_set = task_array[weekly_task_offset]
+                quest_gallery.addView(current_set.layout1)
+                quest_gallery.addView(current_set.layout2)
+                quest_gallery.addView(current_set.layout3)
+            }
+        }
+
+    }
+
+    data class layouts_set(
+        val layout1: LinearLayout,
+        val layout2: LinearLayout,
+        val layout3: LinearLayout
     )
 
-    @SuppressLint("SetTextI18n")
-    private fun crete_daily_tasks(): MutableList<daily_layouts_set> {
-        val daily = mutableListOf<daily_layouts_set>()
+    @SuppressLint("SetTextI18n", "SuspiciousIndentation")
+    private fun crete_tasks(): MutableList<layouts_set> {
+        val daily: MutableList<layouts_set>
         val width_regulation = 4.5
         val height_regulation = 7.8
 
-            daily.add(create_daily_set(width_regulation,height_regulation))
+            daily = create_set(width_regulation,height_regulation)
         return daily
     }
 
-    fun create_daily_set(width_regulation: Double, height_regulation: Double): daily_layouts_set{
-        val data = read_from_file();
-         val tmp1 = LinearLayout(this).apply {
-            setBackgroundColor(Color.GRAY)
-            orientation = LinearLayout.VERTICAL
-            layoutParams = LinearLayout.LayoutParams(
-                (resources.displayMetrics.widthPixels / width_regulation).toInt(),
-                (resources.displayMetrics.heightPixels / height_regulation).toInt()
-            ).apply {
-                setMargins(20, 20, 20, 20)
-                setGravity(Gravity.CENTER)
+    @SuppressLint("SetTextI18n")
+    fun create_set(widthRegulation: Double, heightRegulation: Double): MutableList<layouts_set> {
+        val data = read_from_file() // Read all rows from the CSV file
+        val dailySets = mutableListOf<layouts_set>() // List to store all daily layout sets
+
+        for (row in data) {
+            if (row.size < 3) continue // Skip rows with insufficient data
+
+            val layouts = row.map { taskText ->
+                LinearLayout(this).apply {
+                    setBackgroundColor(Color.GRAY)
+                    orientation = LinearLayout.VERTICAL
+                    layoutParams = LinearLayout.LayoutParams(
+                        (resources.displayMetrics.widthPixels / widthRegulation).toInt(),
+                        (resources.displayMetrics.heightPixels / heightRegulation).toInt()
+                    ).apply {
+                        setMargins(20, 20, 20, 20)
+                    }
+
+                    addView(TextView(this@MainActivity).apply {
+                        text = taskText
+                        textSize = 35F
+                        textAlignment = View.TEXT_ALIGNMENT_CENTER
+                        layoutParams = LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.MATCH_PARENT,
+                            150
+                        )
+                    })
+
+                    addView(CheckBox(this@MainActivity).apply {
+                        text = "complete"
+                        isChecked = false
+                    })
+                }
+            }
+
+            if (layouts.size >= 3) {
+                dailySets.add(layouts_set(layouts[0], layouts[1], layouts[2]))
             }
         }
 
-        tmp1.addView(TextView(this).apply {
-            text = data[0].component2()
-            textSize = 35F
-            textAlignment = View.TEXT_ALIGNMENT_CENTER
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                150
-            )
-        })
-        tmp1.addView(CheckBox(this).apply {
-            text = "complete"
-            isChecked = false
-        })
-
-
-
-        val tmp2 = LinearLayout(this).apply {
-            setBackgroundColor(Color.GRAY)
-            orientation = LinearLayout.VERTICAL
-            layoutParams = LinearLayout.LayoutParams(
-                (resources.displayMetrics.widthPixels / width_regulation).toInt(),
-                (resources.displayMetrics.heightPixels / height_regulation).toInt()
-            ).apply {
-                setMargins(20, 20, 20, 20)
-                setGravity(Gravity.CENTER)
-            }
-        }
-
-        tmp2.addView(TextView(this).apply {
-            text = data[0].component2()
-            textSize = 35F
-            textAlignment = View.TEXT_ALIGNMENT_CENTER
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                150
-            )
-        })
-        tmp2.addView(CheckBox(this).apply {
-            text = "complete"
-            isChecked = false
-        })
-
-
-        val tmp3 = LinearLayout(this).apply {
-            setBackgroundColor(Color.GRAY)
-            orientation = LinearLayout.VERTICAL
-            layoutParams = LinearLayout.LayoutParams(
-                (resources.displayMetrics.widthPixels / width_regulation).toInt(),
-                (resources.displayMetrics.heightPixels / height_regulation).toInt()
-            ).apply {
-                setMargins(20, 20, 20, 20)
-                setGravity(Gravity.CENTER)
-            }
-        }
-
-        tmp3.addView(TextView(this).apply {
-            text = data[0].component2()
-            textSize = 35F
-            textAlignment = View.TEXT_ALIGNMENT_CENTER
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                150
-            )
-        })
-        tmp3.addView(CheckBox(this).apply {
-            text = "complete"
-            isChecked = false
-        })
-        return daily_layouts_set(tmp1,tmp2,tmp3)
+        return dailySets
     }
+
 
     fun createEmptyFile(fileName: String): Boolean {
         val file = File(fileName)
@@ -356,7 +426,7 @@ topLayout.addView(button_layout)
         return file.createNewFile()
     }
 
-    fun read_from_file():MutableList<List<String>>{
+    private fun read_from_file():MutableList<List<String>>{
         val assetManager: AssetManager = assets
         val inputStream = assetManager.open("daily.csv")
         val reader = BufferedReader(InputStreamReader(inputStream))
