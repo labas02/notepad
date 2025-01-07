@@ -6,13 +6,16 @@ import android.content.Context
 import android.content.res.AssetManager
 import android.graphics.Color
 import android.os.Bundle
+import android.telephony.AccessNetworkConstants.GeranBand
 import android.view.Gravity
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.PopupMenu
+import android.widget.PopupWindow
 import android.widget.ScrollView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -218,51 +221,52 @@ class MainActivity : AppCompatActivity() {
         }
 topLayout.addView(button_layout)
 
-        // Bottom-left layout
         val bottom_menu = LinearLayout(this).apply {
             id = View.generateViewId()
-            setBackgroundColor(Color.RED)
-            layoutParams = ConstraintLayout.LayoutParams(
+            setBackgroundColor(Color.CYAN)
+            layoutParams = LinearLayout.LayoutParams(
                 ConstraintLayout.LayoutParams.MATCH_CONSTRAINT,
                 ConstraintLayout.LayoutParams.MATCH_CONSTRAINT
             )
         }
-
-        val scroll = ScrollView(this).apply {
+        val bottom_button_center = LinearLayout(this).apply {
+            id = View.generateViewId()
+            gravity = Gravity.CENTER
+            setBackgroundColor(Color.GREEN)
             layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
+                (context.resources.displayMetrics.widthPixels * 0.33333).toInt(),
                 LinearLayout.LayoutParams.MATCH_PARENT
             )
         }
-
-        val linear = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            )
-        }
-        for (nums in 0..50){
-        val textView = TextView(this).apply {
-            text = "sdfsd"
-            textSize = 18f
-            setTextColor(Color.BLACK)
-        }
-            linear.addView(textView)
-    }
-        scroll.addView(linear)
-
-        bottom_menu.addView(scroll)
-
-        // Bottom-right layout
-        val bottomRightLayout = FrameLayout(this).apply {
+        val bottom_button_left = LinearLayout(this).apply {
             id = View.generateViewId()
-            setBackgroundColor(Color.GREEN)
-            layoutParams = ConstraintLayout.LayoutParams(
-                ConstraintLayout.LayoutParams.MATCH_CONSTRAINT,
-                ConstraintLayout.LayoutParams.MATCH_CONSTRAINT
+            gravity = Gravity.LEFT
+            setBackgroundColor(Color.BLUE)
+            layoutParams = LinearLayout.LayoutParams(
+                (context.resources.displayMetrics.widthPixels*0.333333).toInt(),
+                LinearLayout.LayoutParams.MATCH_PARENT
             )
+            setOnClickListener({
+                //show_save_pop_up()
+            })
+
         }
+        val bottom_button_right = LinearLayout(this).apply {
+            id = View.generateViewId()
+            setBackgroundColor(Color.CYAN)
+            gravity = Gravity.RIGHT
+            layoutParams = LinearLayout.LayoutParams(
+                (context.resources.displayMetrics.widthPixels*0.333333).toInt(),
+                LinearLayout.LayoutParams.MATCH_PARENT
+            )
+
+        }
+
+        bottom_menu.addView(bottom_button_left)
+        bottom_menu.addView(bottom_button_center)
+        bottom_menu.addView(bottom_button_right)
+
+
 
         // Add views to the ConstraintLayout
         constraintLayout.addView(topLayout)
