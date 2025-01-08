@@ -1,34 +1,31 @@
 
 package com.example.notepad
 
-import CustomSizeDialogFragment
 import android.annotation.SuppressLint
-import android.app.Dialog
 import android.content.Context
-import android.content.Intent
+import android.content.Context.MODE_PRIVATE
 import android.content.res.AssetManager
 import android.graphics.Color
 import android.os.Bundle
-import android.telephony.AccessNetworkConstants.GeranBand
 import android.view.Gravity
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.PopupMenu
-import android.widget.PopupWindow
-import android.widget.ScrollView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import java.io.BufferedReader
-import java.io.File
+import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.InputStreamReader
+import java.util.stream.IntStream.range
+
+
 
 class MainActivity : AppCompatActivity() {
     @SuppressLint("SetTextI18n")
@@ -36,13 +33,13 @@ class MainActivity : AppCompatActivity() {
     var daily_task_offset = 0
     var weekly_task_offset = 0
 
+    @SuppressLint("RtlHardcoded")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        var daily_task_array = crete_tasks()
-        var weekly_task_array = crete_tasks()
+        val daily_task_array = crete_tasks("daily.csv")
+        val weekly_task_array = crete_tasks("weekly.csv")
 
-        // Create a parent ConstraintLayout
         val constraintLayout = ConstraintLayout(this).apply {
             layoutParams = ConstraintLayout.LayoutParams(
                 ConstraintLayout.LayoutParams.MATCH_PARENT,
@@ -50,7 +47,6 @@ class MainActivity : AppCompatActivity() {
             )
         }
 
-        // Top blue layout
         val topLayout = FrameLayout(this).apply {
             id = View.generateViewId()
             setBackgroundColor(Color.BLUE)
@@ -88,9 +84,9 @@ class MainActivity : AppCompatActivity() {
                 (context.resources.displayMetrics.widthPixels * 0.15).toInt(),
                 ConstraintLayout.LayoutParams.MATCH_PARENT )
 
-            setOnClickListener({
-                this@MainActivity.move_gallery(1, daily_quest_gallery,daily_task_array,1)
-            })
+            setOnClickListener {
+                this@MainActivity.move_gallery(-1, daily_quest_gallery, daily_task_array, 1)
+            }
 
         }
 
@@ -103,7 +99,7 @@ class MainActivity : AppCompatActivity() {
                 ConstraintLayout.LayoutParams.MATCH_PARENT )
 
             setOnClickListener {
-                this@MainActivity.move_gallery(-1, daily_quest_gallery, daily_task_array,1)
+                this@MainActivity.move_gallery(1, daily_quest_gallery, daily_task_array,1)
             }
 
         }
@@ -142,9 +138,9 @@ class MainActivity : AppCompatActivity() {
                 (context.resources.displayMetrics.widthPixels * 0.15).toInt(),
                 ConstraintLayout.LayoutParams.MATCH_PARENT )
 
-            setOnClickListener({
-                this@MainActivity.move_gallery(1, weekly_quest_gallery,weekly_task_array,2)
-            })
+            setOnClickListener {
+                this@MainActivity.move_gallery(-1, weekly_quest_gallery, weekly_task_array, 2)
+            }
 
         }
 
@@ -157,7 +153,7 @@ class MainActivity : AppCompatActivity() {
                 ConstraintLayout.LayoutParams.MATCH_PARENT )
 
             setOnClickListener {
-                this@MainActivity.move_gallery(-1, weekly_quest_gallery, weekly_task_array,2)
+                this@MainActivity.move_gallery(1, weekly_quest_gallery, weekly_task_array,2)
             }
 
         }
@@ -251,11 +247,11 @@ topLayout.addView(button_layout)
                 (context.resources.displayMetrics.widthPixels*0.333333).toInt(),
                 LinearLayout.LayoutParams.MATCH_PARENT
             )
-            setOnClickListener({
-                val dialog = CustomSizeDialogFragment()
+            setOnClickListener {
+                val dialog = Create_task(assets)
                 dialog.show(supportFragmentManager, "CustomSizeBottomSheetDialog")
 
-            })
+            }
 
         }
         val bottom_button_right = LinearLayout(this).apply {
@@ -338,7 +334,7 @@ topLayout.addView(button_layout)
     private fun writeToFile(context: Context, fileName: String, content: String) {
         try {
             // Open a file output stream to the app's internal storage
-            val fileOutputStream: FileOutputStream = context.openFileOutput(fileName, Context.MODE_PRIVATE)
+            val fileOutputStream: FileOutputStream = context.openFileOutput(fileName, MODE_PRIVATE)
             fileOutputStream.write(content.toByteArray())
             fileOutputStream.close()  // Close the file stream
         } catch (e: IOException) {
@@ -350,21 +346,36 @@ topLayout.addView(button_layout)
         quest_gallery.removeAllViews()
         when(which_array){
             1 ->{
-                //daily_offset
-                daily_task_offset += int
-                val current_set = task_array[daily_task_offset]
-                quest_gallery.addView(current_set.layout1)
-                quest_gallery.addView(current_set.layout2)
-                quest_gallery.addView(current_set.layout3)
-            }
+                    //daily_offset
+                    daily_task_offset += int
+                if (daily_task_offset>task_array.size-1) {
+                    daily_task_offset=0
+                }
+                if (daily_task_offset<0){
+                    daily_task_offset=task_array.size-1
+                }
+                    val current_set = task_array[daily_task_offset]
+                    quest_gallery.addView(current_set.layout1)
+                    quest_gallery.addView(current_set.layout2)
+                    quest_gallery.addView(current_set.layout3)
+
+                }
             2 ->{
-                //weekly_offset
+                //daily_offset
                 weekly_task_offset += int
+                if (weekly_task_offset>task_array.size-1) {
+                    weekly_task_offset=0
+                }
+                if (weekly_task_offset<0){
+                    weekly_task_offset=task_array.size-1
+                }
                 val current_set = task_array[weekly_task_offset]
                 quest_gallery.addView(current_set.layout1)
                 quest_gallery.addView(current_set.layout2)
                 quest_gallery.addView(current_set.layout3)
+
             }
+
         }
 
     }
@@ -376,25 +387,31 @@ topLayout.addView(button_layout)
     )
 
     @SuppressLint("SetTextI18n", "SuspiciousIndentation")
-    private fun crete_tasks(): MutableList<layouts_set> {
-        val daily: MutableList<layouts_set>
+    private fun crete_tasks(which_task:String): MutableList<layouts_set> {
+        val tasks: MutableList<layouts_set>
         val width_regulation = 4.5
         val height_regulation = 7.8
 
-            daily = create_set(width_regulation,height_regulation)
-        return daily
+            tasks = create_set(width_regulation,height_regulation,which_task)
+        return tasks
     }
 
     @SuppressLint("SetTextI18n")
-    fun create_set(widthRegulation: Double, heightRegulation: Double): MutableList<layouts_set> {
-        val data = read_from_file() // Read all rows from the CSV file
-        val dailySets = mutableListOf<layouts_set>() // List to store all daily layout sets
-
-        for (row in data) {
-            if (row.size < 3) continue // Skip rows with insufficient data
-
-            val layouts = row.map { taskText ->
-                LinearLayout(this).apply {
+    fun create_set(widthRegulation: Double, heightRegulation: Double,data_type:String): MutableList<layouts_set> {
+        var layouts = emptyArray<LinearLayout>()
+        val data = read_from_file(data_type)
+        if (data.isEmpty()){
+            return
+        }
+        var data_length = data.size
+        val sets = mutableListOf<layouts_set>() // List to store all daily layout sets
+        while (data_length%3!=0){
+            data_length+=1
+        }
+        println(data_length)
+        for (i in range(0,data_length)) {
+            if (i < data.size-1) {
+                layouts += LinearLayout(this).apply {
                     setBackgroundColor(Color.GRAY)
                     orientation = LinearLayout.VERTICAL
                     layoutParams = LinearLayout.LayoutParams(
@@ -405,7 +422,7 @@ topLayout.addView(button_layout)
                     }
 
                     addView(TextView(this@MainActivity).apply {
-                        text = taskText
+                        text = data[i][0]
                         textSize = 35F
                         textAlignment = View.TEXT_ALIGNMENT_CENTER
                         layoutParams = LinearLayout.LayoutParams(
@@ -419,35 +436,87 @@ topLayout.addView(button_layout)
                         isChecked = false
                     })
                 }
-            }
 
-            if (layouts.size >= 3) {
-                dailySets.add(layouts_set(layouts[0], layouts[1], layouts[2]))
+                if (layouts.size >= 3) {
+                    sets.add(layouts_set(layouts[0], layouts[1], layouts[2]))
+                    layouts = emptyArray<LinearLayout>()
+                }
+            }else{
+                layouts += LinearLayout(this).apply {
+                    setBackgroundColor(Color.GRAY)
+                    orientation = LinearLayout.VERTICAL
+                    layoutParams = LinearLayout.LayoutParams(
+                        (resources.displayMetrics.widthPixels / widthRegulation).toInt(),
+                        (resources.displayMetrics.heightPixels / heightRegulation).toInt()
+                    ).apply {
+                        setMargins(20, 20, 20, 20)
+                    }
+
+                    addView(TextView(this@MainActivity).apply {
+                        text = ""
+                        textSize = 35F
+                        textAlignment = View.TEXT_ALIGNMENT_CENTER
+                        layoutParams = LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.MATCH_PARENT,
+                            150
+                        )
+                    })
+
+                    addView(CheckBox(this@MainActivity).apply {
+                        text = ""
+                        isChecked = false
+                    })
+                }
+
+                if (layouts.size >= 3) {
+                    sets.add(layouts_set(layouts[0], layouts[1], layouts[2]))
+                    layouts = emptyArray<LinearLayout>()
+                }
             }
         }
 
-        return dailySets
+        return sets
     }
 
 
-    fun createEmptyFile(fileName: String): Boolean {
-        val file = File(fileName)
+    private fun read_from_file(file:String):MutableList<List<String>>{
 
-        // Create the file if it doesn't exist, returns true if created, false if already exists
-        return file.createNewFile()
-    }
-
-    private fun read_from_file():MutableList<List<String>>{
-        val assetManager: AssetManager = assets
-        val inputStream = assetManager.open("daily.csv")
-        val reader = BufferedReader(InputStreamReader(inputStream))
-        val data = mutableListOf<List<String>>()
-
-        reader.forEachLine { line ->
-            val row = line.split(",") // Split the line by commas
-            data.add(row)
+        if(!this.getFileStreamPath(file).exists()){
+            var data = "1,fuck,hello"
+            try {
+                val fileOutputStream: FileOutputStream = this.openFileOutput("weekly.csv", Context.MODE_PRIVATE)
+                fileOutputStream.write(data.toByteArray())
+                fileOutputStream.close()
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
         }
-        reader.close()
-    return data
+
+            val data = mutableListOf<List<String>>()
+
+            try {
+                // Open the file for reading
+                this.openFileInput(file).use { inputStream ->
+                    val reader = BufferedReader(InputStreamReader(inputStream))
+
+                    // Read each line and split by commas
+                    reader.forEachLine { line ->
+                        val row = line.split(",")  // Split the line by commas
+                        data.add(row)
+                    }
+
+                    // Automatically closes the reader and input stream
+                    reader.close()
+                }
+
+                println("Data successfully read from internal storage.")
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+                println("Error reading from file.")
+            }
+println(data.toString())
+            return data
+
     }
 }
