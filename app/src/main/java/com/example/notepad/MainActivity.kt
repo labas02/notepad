@@ -1,8 +1,11 @@
 
 package com.example.notepad
 
+import CustomSizeDialogFragment
 import android.annotation.SuppressLint
+import android.app.Dialog
 import android.content.Context
+import android.content.Intent
 import android.content.res.AssetManager
 import android.graphics.Color
 import android.os.Bundle
@@ -238,6 +241,8 @@ topLayout.addView(button_layout)
                 LinearLayout.LayoutParams.MATCH_PARENT
             )
         }
+
+
         val bottom_button_left = LinearLayout(this).apply {
             id = View.generateViewId()
             gravity = Gravity.LEFT
@@ -247,7 +252,9 @@ topLayout.addView(button_layout)
                 LinearLayout.LayoutParams.MATCH_PARENT
             )
             setOnClickListener({
-                //show_save_pop_up()
+                val dialog = CustomSizeDialogFragment()
+                dialog.show(supportFragmentManager, "CustomSizeBottomSheetDialog")
+
             })
 
         }
