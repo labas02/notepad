@@ -25,12 +25,20 @@ import java.io.InputStream
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
 
-class Create_task() : DialogFragment() {
+class Create_task(val assets: AssetManager,context: Context) : DialogFragment() {
     val title = ""
     val description = ""
     val dificulty = ""
     val time_limit = ""
     @SuppressLint("UseRequireInsteadOfGet")
+
+    interface OnFragmentClosedListener {
+        fun onFragmentClosed() // Method that the activity will implement
+    }
+
+    // Create a variable to hold the listener
+    private var listener: OnFragmentClosedListener? = null
+
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState)
 
@@ -49,11 +57,11 @@ class Create_task() : DialogFragment() {
     }
 
     @SuppressLint("SetTextI18n")
-    fun onCreateView(
+    override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?,
-        context: Context): View {
+        savedInstanceState: Bundle?
+    ): View {
 
         return LinearLayout(requireContext()).apply {
             setBackgroundColor(Color.CYAN)
@@ -72,19 +80,20 @@ class Create_task() : DialogFragment() {
 
             })
             addView(Button(context).apply {
-                text = "submit"
+                text = "Close"
                 setOnClickListener {
-                    add_task("daily.csv")
+                    add_task()
                     dismiss() }
             })
         }
     }
 
     @SuppressLint("SuspiciousIndentation")
-    fun add_task(which_file:String) {
+    fun add_task() {
+        println("updated")
     var data = "1,fuck,hello"
             try {
-                val fileOutputStream: FileOutputStream = requireContext().openFileOutput(which_file, Context.MODE_PRIVATE)
+                val fileOutputStream: FileOutputStream = requireContext().openFileOutput("weekly", Context.MODE_PRIVATE)
                 fileOutputStream.write(data.toByteArray())
                 fileOutputStream.close()
             } catch (e: IOException) {
