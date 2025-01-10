@@ -1,10 +1,7 @@
-
 package com.example.notepad
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.Context.MODE_PRIVATE
-import android.content.res.AssetManager
 import android.graphics.Color
 import android.os.Bundle
 import android.view.Gravity
@@ -19,12 +16,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import java.io.BufferedReader
-import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.InputStreamReader
 import java.util.stream.IntStream.range
-
 
 
 class MainActivity : AppCompatActivity() {
@@ -33,12 +28,13 @@ class MainActivity : AppCompatActivity() {
     var daily_task_offset = 0
     var weekly_task_offset = 0
 
+    var daily_task_array = crete_tasks("daily.csv")
+    var weekly_task_array = crete_tasks("weekly.csv")
     @SuppressLint("RtlHardcoded")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val daily_task_array = crete_tasks("daily.csv")
-        val weekly_task_array = crete_tasks("weekly.csv")
+
 
         val constraintLayout = ConstraintLayout(this).apply {
             layoutParams = ConstraintLayout.LayoutParams(
@@ -72,7 +68,8 @@ class MainActivity : AppCompatActivity() {
             gravity = Gravity.CENTER
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.MATCH_PARENT)
+                LinearLayout.LayoutParams.MATCH_PARENT
+            )
 
         }
 
@@ -82,7 +79,8 @@ class MainActivity : AppCompatActivity() {
             gravity = Gravity.START
             layoutParams = ConstraintLayout.LayoutParams(
                 (context.resources.displayMetrics.widthPixels * 0.15).toInt(),
-                ConstraintLayout.LayoutParams.MATCH_PARENT )
+                ConstraintLayout.LayoutParams.MATCH_PARENT
+            )
 
             setOnClickListener {
                 this@MainActivity.move_gallery(-1, daily_quest_gallery, daily_task_array, 1)
@@ -96,15 +94,16 @@ class MainActivity : AppCompatActivity() {
             gravity = Gravity.START
             layoutParams = ConstraintLayout.LayoutParams(
                 (context.resources.displayMetrics.widthPixels * 0.15).toInt(),
-                ConstraintLayout.LayoutParams.MATCH_PARENT )
+                ConstraintLayout.LayoutParams.MATCH_PARENT
+            )
 
             setOnClickListener {
-                this@MainActivity.move_gallery(1, daily_quest_gallery, daily_task_array,1)
+                this@MainActivity.move_gallery(1, daily_quest_gallery, daily_task_array, 1)
             }
 
         }
 
-        move_gallery(0,daily_quest_gallery,daily_task_array,1)
+        move_gallery(0, daily_quest_gallery, daily_task_array, 1)
 
         daily_layout.addView(daily_left_arrow)
         daily_layout.addView(daily_quest_gallery)
@@ -126,7 +125,8 @@ class MainActivity : AppCompatActivity() {
             gravity = Gravity.CENTER
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.MATCH_PARENT)
+                LinearLayout.LayoutParams.MATCH_PARENT
+            )
 
         }
 
@@ -136,7 +136,8 @@ class MainActivity : AppCompatActivity() {
             gravity = Gravity.START
             layoutParams = ConstraintLayout.LayoutParams(
                 (context.resources.displayMetrics.widthPixels * 0.15).toInt(),
-                ConstraintLayout.LayoutParams.MATCH_PARENT )
+                ConstraintLayout.LayoutParams.MATCH_PARENT
+            )
 
             setOnClickListener {
                 this@MainActivity.move_gallery(-1, weekly_quest_gallery, weekly_task_array, 2)
@@ -150,17 +151,18 @@ class MainActivity : AppCompatActivity() {
             gravity = Gravity.START
             layoutParams = ConstraintLayout.LayoutParams(
                 (context.resources.displayMetrics.widthPixels * 0.15).toInt(),
-                ConstraintLayout.LayoutParams.MATCH_PARENT )
+                ConstraintLayout.LayoutParams.MATCH_PARENT
+            )
 
             setOnClickListener {
-                this@MainActivity.move_gallery(1, weekly_quest_gallery, weekly_task_array,2)
+                this@MainActivity.move_gallery(1, weekly_quest_gallery, weekly_task_array, 2)
             }
 
         }
 
 
 
-        move_gallery(0,weekly_quest_gallery,weekly_task_array,2)
+        move_gallery(0, weekly_quest_gallery, weekly_task_array, 2)
 
         weekly_layout.addView(weekly_left_arrow)
         weekly_layout.addView(weekly_quest_gallery)
@@ -176,7 +178,7 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-        val button_layout = ConstraintLayout(this).apply{
+        val button_layout = ConstraintLayout(this).apply {
             id = View.generateViewId()
             setBackgroundColor(Color.BLACK)
             layoutParams = ConstraintLayout.LayoutParams(
@@ -218,7 +220,7 @@ class MainActivity : AppCompatActivity() {
                 popupMenu.show()
             }
         }
-topLayout.addView(button_layout)
+        topLayout.addView(button_layout)
 
         val bottom_menu = LinearLayout(this).apply {
             id = View.generateViewId()
@@ -244,11 +246,12 @@ topLayout.addView(button_layout)
             gravity = Gravity.LEFT
             setBackgroundColor(Color.BLUE)
             layoutParams = LinearLayout.LayoutParams(
-                (context.resources.displayMetrics.widthPixels*0.333333).toInt(),
+                (context.resources.displayMetrics.widthPixels * 0.333333).toInt(),
                 LinearLayout.LayoutParams.MATCH_PARENT
             )
             setOnClickListener {
-                val dialog = Create_task(assets)
+                val dialog = Create_task()
+                dialog.onStop().apply {reload_galleries() }
                 dialog.show(supportFragmentManager, "CustomSizeBottomSheetDialog")
 
             }
@@ -259,7 +262,7 @@ topLayout.addView(button_layout)
             setBackgroundColor(Color.CYAN)
             gravity = Gravity.RIGHT
             layoutParams = LinearLayout.LayoutParams(
-                (context.resources.displayMetrics.widthPixels*0.333333).toInt(),
+                (context.resources.displayMetrics.widthPixels * 0.333333).toInt(),
                 LinearLayout.LayoutParams.MATCH_PARENT
             )
 
@@ -268,7 +271,6 @@ topLayout.addView(button_layout)
         bottom_menu.addView(bottom_button_left)
         bottom_menu.addView(bottom_button_center)
         bottom_menu.addView(bottom_button_right)
-
 
 
         // Add views to the ConstraintLayout
@@ -289,39 +291,64 @@ topLayout.addView(button_layout)
         set.connect(topLayout.id, ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START)
         set.connect(topLayout.id, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
 //daily layout
-        set.constrainPercentHeight(daily_layout.id,0.20f)
-        set.constrainPercentWidth(daily_layout.id,1f)
-        set.connect(daily_layout.id,ConstraintSet.TOP,topLayout.id,ConstraintSet.BOTTOM)
-        set.connect(daily_layout.id,ConstraintSet.START,ConstraintSet.PARENT_ID,ConstraintSet.START)
-        set.connect(daily_layout.id,ConstraintSet.END,ConstraintSet.PARENT_ID,ConstraintSet.END)
+        set.constrainPercentHeight(daily_layout.id, 0.20f)
+        set.constrainPercentWidth(daily_layout.id, 1f)
+        set.connect(daily_layout.id, ConstraintSet.TOP, topLayout.id, ConstraintSet.BOTTOM)
+        set.connect(
+            daily_layout.id,
+            ConstraintSet.START,
+            ConstraintSet.PARENT_ID,
+            ConstraintSet.START
+        )
+        set.connect(daily_layout.id, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
 
 //weekly layout
-        set.constrainPercentHeight(weekly_layout.id,0.20f)
-        set.constrainPercentWidth(weekly_layout.id,1f)
-        set.connect(weekly_layout.id,ConstraintSet.TOP,daily_layout.id,ConstraintSet.BOTTOM)
-        set.connect(weekly_layout.id,ConstraintSet.START,ConstraintSet.PARENT_ID,ConstraintSet.START)
-        set.connect(weekly_layout.id,ConstraintSet.END,ConstraintSet.PARENT_ID,ConstraintSet.END)
+        set.constrainPercentHeight(weekly_layout.id, 0.20f)
+        set.constrainPercentWidth(weekly_layout.id, 1f)
+        set.connect(weekly_layout.id, ConstraintSet.TOP, daily_layout.id, ConstraintSet.BOTTOM)
+        set.connect(
+            weekly_layout.id,
+            ConstraintSet.START,
+            ConstraintSet.PARENT_ID,
+            ConstraintSet.START
+        )
+        set.connect(weekly_layout.id, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
 
         //spacer
-        set.constrainPercentWidth(spacer.id,0.20f)
-        set.constrainPercentHeight(spacer.id,0.6f)
-        set.connect(spacer.id,ConstraintSet.TOP,weekly_layout.id,ConstraintSet.BOTTOM)
-        set.connect(spacer.id,ConstraintSet.START,ConstraintSet.PARENT_ID,ConstraintSet.START)
-        set.connect(spacer.id,ConstraintSet.END,ConstraintSet.PARENT_ID,ConstraintSet.END)
+        set.constrainPercentWidth(spacer.id, 0.20f)
+        set.constrainPercentHeight(spacer.id, 0.6f)
+        set.connect(spacer.id, ConstraintSet.TOP, weekly_layout.id, ConstraintSet.BOTTOM)
+        set.connect(spacer.id, ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START)
+        set.connect(spacer.id, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
         // Bottom-left layout
         set.connect(bottom_menu.id, ConstraintSet.TOP, spacer.id, ConstraintSet.BOTTOM)
-        set.connect(bottom_menu.id, ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START)
+        set.connect(
+            bottom_menu.id,
+            ConstraintSet.START,
+            ConstraintSet.PARENT_ID,
+            ConstraintSet.START
+        )
         set.connect(bottom_menu.id, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
-        set.connect(bottom_menu.id, ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM)
+        set.connect(
+            bottom_menu.id,
+            ConstraintSet.BOTTOM,
+            ConstraintSet.PARENT_ID,
+            ConstraintSet.BOTTOM
+        )
         //set.constrainPercentWidth(bottomLeftLayout.id, 0.5f) // Half the width
 
 
         // button menu
         //set.constrainPercentWidth(button_layout.id,0.2f)
-        set.connect(button_layout.id, ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START)
+        set.connect(
+            button_layout.id,
+            ConstraintSet.START,
+            ConstraintSet.PARENT_ID,
+            ConstraintSet.START
+        )
         set.connect(button_layout.id, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
         set.connect(button_layout.id, ConstraintSet.BOTTOM, daily_layout.id, ConstraintSet.TOP)
-        set.connect(button_layout.id, ConstraintSet.TOP,ConstraintSet.PARENT_ID,ConstraintSet.TOP)
+        set.connect(button_layout.id, ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP)
 
         // Apply constraints
         set.applyTo(constraintLayout)
@@ -329,6 +356,27 @@ topLayout.addView(button_layout)
         // Set the layout as the content view
         setContentView(constraintLayout)
     }
+
+    private fun reload_galleries() {
+        daily_task_array = crete_tasks("daily.csv")
+        weekly_task_array = crete_tasks("weekly.csv")
+
+            quest_gallery.removeAllViews()
+
+                    val current_set = task_array[daily_task_offset]
+                    quest_gallery.addView(current_set.layout1)
+                    quest_gallery.addView(current_set.layout2)
+                    quest_gallery.addView(current_set.layout3)
+
+                    val current_set = task_array[weekly_task_offset]
+                    quest_gallery.addView(current_set.layout1)
+                    quest_gallery.addView(current_set.layout2)
+                    quest_gallery.addView(current_set.layout3)
+
+                }
+
+
+
 
     // Function to write content to a file
     private fun writeToFile(context: Context, fileName: String, content: String) {
@@ -342,32 +390,38 @@ topLayout.addView(button_layout)
         }
     }
 
-    private fun move_gallery(int: Int, quest_gallery:LinearLayout, task_array:MutableList<layouts_set>, which_array:Int) {
+    private fun move_gallery(
+        int: Int,
+        quest_gallery: LinearLayout,
+        task_array: MutableList<layouts_set>,
+        which_array: Int
+    ) {
         quest_gallery.removeAllViews()
-        when(which_array){
-            1 ->{
-                    //daily_offset
-                    daily_task_offset += int
-                if (daily_task_offset>task_array.size-1) {
-                    daily_task_offset=0
+        when (which_array) {
+            1 -> {
+                //daily_offset
+                daily_task_offset += int
+                if (daily_task_offset > task_array.size - 1) {
+                    daily_task_offset = 0
                 }
-                if (daily_task_offset<0){
-                    daily_task_offset=task_array.size-1
+                if (daily_task_offset < 0) {
+                    daily_task_offset = task_array.size - 1
                 }
-                    val current_set = task_array[daily_task_offset]
-                    quest_gallery.addView(current_set.layout1)
-                    quest_gallery.addView(current_set.layout2)
-                    quest_gallery.addView(current_set.layout3)
+                val current_set = task_array[daily_task_offset]
+                quest_gallery.addView(current_set.layout1)
+                quest_gallery.addView(current_set.layout2)
+                quest_gallery.addView(current_set.layout3)
 
-                }
-            2 ->{
+            }
+
+            2 -> {
                 //daily_offset
                 weekly_task_offset += int
-                if (weekly_task_offset>task_array.size-1) {
-                    weekly_task_offset=0
+                if (weekly_task_offset > task_array.size - 1) {
+                    weekly_task_offset = 0
                 }
-                if (weekly_task_offset<0){
-                    weekly_task_offset=task_array.size-1
+                if (weekly_task_offset < 0) {
+                    weekly_task_offset = task_array.size - 1
                 }
                 val current_set = task_array[weekly_task_offset]
                 quest_gallery.addView(current_set.layout1)
@@ -387,30 +441,43 @@ topLayout.addView(button_layout)
     )
 
     @SuppressLint("SetTextI18n", "SuspiciousIndentation")
-    private fun crete_tasks(which_task:String): MutableList<layouts_set> {
+    private fun crete_tasks(which_task: String): MutableList<layouts_set> {
         val tasks: MutableList<layouts_set>
         val width_regulation = 4.5
         val height_regulation = 7.8
 
-            tasks = create_set(width_regulation,height_regulation,which_task)
+        tasks = create_set(width_regulation, height_regulation, which_task)
         return tasks
     }
 
     @SuppressLint("SetTextI18n")
-    fun create_set(widthRegulation: Double, heightRegulation: Double,data_type:String): MutableList<layouts_set> {
+    fun create_set(
+        widthRegulation: Double,
+        heightRegulation: Double,
+        data_type: String
+    ): MutableList<layouts_set> {
         var layouts = emptyArray<LinearLayout>()
         val data = read_from_file(data_type)
-        if (data.isEmpty()){
-            return
+        if (data.isNullOrEmpty()) {
+            var data = "1,fuck,hello"
+            try {
+                val fileOutputStream: FileOutputStream =
+                    this.openFileOutput(data_type, Context.MODE_PRIVATE)
+                fileOutputStream.write(data.toByteArray())
+                fileOutputStream.close()
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
         }
+
         var data_length = data.size
         val sets = mutableListOf<layouts_set>() // List to store all daily layout sets
-        while (data_length%3!=0){
-            data_length+=1
+        while (data_length % 3 != 0) {
+            data_length += 1
         }
         println(data_length)
-        for (i in range(0,data_length)) {
-            if (i < data.size-1) {
+        for (i in range(0, data_length)) {
+            if (i < data.size - 1) {
                 layouts += LinearLayout(this).apply {
                     setBackgroundColor(Color.GRAY)
                     orientation = LinearLayout.VERTICAL
@@ -441,7 +508,7 @@ topLayout.addView(button_layout)
                     sets.add(layouts_set(layouts[0], layouts[1], layouts[2]))
                     layouts = emptyArray<LinearLayout>()
                 }
-            }else{
+            } else {
                 layouts += LinearLayout(this).apply {
                     setBackgroundColor(Color.GRAY)
                     orientation = LinearLayout.VERTICAL
@@ -478,13 +545,48 @@ topLayout.addView(button_layout)
         return sets
     }
 
+    private fun create_empty(
+        widthRegulation: Double,
+        heightRegulation: Double
+    ): MutableList<layouts_set> {
+        val sets = mutableListOf<layouts_set>()
 
-    private fun read_from_file(file:String):MutableList<List<String>>{
+        var tmp_1 = LinearLayout(this).apply {
+            setBackgroundColor(Color.GRAY)
+            orientation = LinearLayout.VERTICAL
+            layoutParams = LinearLayout.LayoutParams(
+                (resources.displayMetrics.widthPixels / widthRegulation).toInt(),
+                (resources.displayMetrics.heightPixels / heightRegulation).toInt()
+            ).apply {
+                setMargins(20, 20, 20, 20)
+            }
 
-        if(!this.getFileStreamPath(file).exists()){
+            addView(TextView(this@MainActivity).apply {
+                text = ""
+                textSize = 35F
+                textAlignment = View.TEXT_ALIGNMENT_CENTER
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    150
+                )
+            })
+
+            addView(CheckBox(this@MainActivity).apply {
+                text = ""
+                isChecked = false
+            })
+        }
+        sets.add(layouts_set(tmp_1, tmp_1, tmp_1))
+        return sets
+    }
+
+    private fun read_from_file(file: String): MutableList<List<String>> {
+
+        if (!this.getFileStreamPath(file).exists()) {
             var data = "1,fuck,hello"
             try {
-                val fileOutputStream: FileOutputStream = this.openFileOutput("weekly.csv", Context.MODE_PRIVATE)
+                val fileOutputStream: FileOutputStream =
+                    this.openFileOutput("weekly.csv", Context.MODE_PRIVATE)
                 fileOutputStream.write(data.toByteArray())
                 fileOutputStream.close()
             } catch (e: IOException) {
@@ -492,31 +594,31 @@ topLayout.addView(button_layout)
             }
         }
 
-            val data = mutableListOf<List<String>>()
+        val data = mutableListOf<List<String>>()
 
-            try {
-                // Open the file for reading
-                this.openFileInput(file).use { inputStream ->
-                    val reader = BufferedReader(InputStreamReader(inputStream))
+        try {
+            // Open the file for reading
+            this.openFileInput(file).use { inputStream ->
+                val reader = BufferedReader(InputStreamReader(inputStream))
 
-                    // Read each line and split by commas
-                    reader.forEachLine { line ->
-                        val row = line.split(",")  // Split the line by commas
-                        data.add(row)
-                    }
-
-                    // Automatically closes the reader and input stream
-                    reader.close()
+                // Read each line and split by commas
+                reader.forEachLine { line ->
+                    val row = line.split(",")  // Split the line by commas
+                    data.add(row)
                 }
 
-                println("Data successfully read from internal storage.")
-
-            } catch (e: Exception) {
-                e.printStackTrace()
-                println("Error reading from file.")
+                // Automatically closes the reader and input stream
+                reader.close()
             }
-println(data.toString())
-            return data
+
+            println("Data successfully read from internal storage.")
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+            println("Error reading from file.")
+        }
+        println(data.toString())
+        return data
 
     }
 }

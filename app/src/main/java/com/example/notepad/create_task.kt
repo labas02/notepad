@@ -25,7 +25,7 @@ import java.io.InputStream
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
 
-class Create_task(val assets: AssetManager) : DialogFragment() {
+class Create_task() : DialogFragment() {
     val title = ""
     val description = ""
     val dificulty = ""
@@ -49,11 +49,11 @@ class Create_task(val assets: AssetManager) : DialogFragment() {
     }
 
     @SuppressLint("SetTextI18n")
-    override fun onCreateView(
+    fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
+        savedInstanceState: Bundle?,
+        context: Context): View {
 
         return LinearLayout(requireContext()).apply {
             setBackgroundColor(Color.CYAN)
@@ -72,19 +72,19 @@ class Create_task(val assets: AssetManager) : DialogFragment() {
 
             })
             addView(Button(context).apply {
-                text = "Close"
+                text = "submit"
                 setOnClickListener {
-                    add_task()
+                    add_task("daily.csv")
                     dismiss() }
             })
         }
     }
 
     @SuppressLint("SuspiciousIndentation")
-    fun add_task() {
+    fun add_task(which_file:String) {
     var data = "1,fuck,hello"
             try {
-                val fileOutputStream: FileOutputStream = requireContext().openFileOutput("weekly", Context.MODE_PRIVATE)
+                val fileOutputStream: FileOutputStream = requireContext().openFileOutput(which_file, Context.MODE_PRIVATE)
                 fileOutputStream.write(data.toByteArray())
                 fileOutputStream.close()
             } catch (e: IOException) {
