@@ -3,8 +3,6 @@ package com.example.notepad
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.Context.MODE_PRIVATE
-import android.content.res.AssetManager
 import android.graphics.Color
 import android.os.Bundle
 import android.view.Gravity
@@ -19,12 +17,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import java.io.BufferedReader
-import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.InputStreamReader
 import java.util.stream.IntStream.range
-
 
 
 class MainActivity : AppCompatActivity() {
@@ -251,7 +247,7 @@ topLayout.addView(button_layout)
                 LinearLayout.LayoutParams.MATCH_PARENT
             )
             setOnClickListener {
-                val dialog = Create_task(assets,this@MainActivity)
+                val dialog = Create_task(this@MainActivity)
                 dialog.show(supportFragmentManager, "CustomSizeBottomSheetDialog")
 
             }
@@ -403,16 +399,18 @@ topLayout.addView(button_layout)
     @SuppressLint("SetTextI18n")
     fun create_set(widthRegulation: Double, heightRegulation: Double,data_type:String): MutableList<layouts_set> {
         var layouts = emptyArray<LinearLayout>()
-        val data = read_from_file(data_type)
+        var data = read_from_file(data_type)
         if (data.isNullOrEmpty()){
-            var data = "1,fuck,hello"
+            println("is empty")
+            var tmp_data = "1,fuck,hello"
             try {
-                val fileOutputStream: FileOutputStream = this.openFileOutput("weekly", Context.MODE_PRIVATE)
-                fileOutputStream.write(data.toByteArray())
+                val fileOutputStream: FileOutputStream = this.openFileOutput(data_type, Context.MODE_PRIVATE)
+                fileOutputStream.write(tmp_data.toByteArray())
                 fileOutputStream.close()
             } catch (e: IOException) {
                 e.printStackTrace()
             }
+             data = read_from_file(data_type)
         }
 
         var data_length = data.size
