@@ -12,6 +12,7 @@ import android.widget.CheckBox
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.PopupMenu
+import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -411,13 +412,13 @@ topLayout.addView(button_layout)
 
 
 
-    @SuppressLint("SetTextI18n")
+    @SuppressLint("SetTextI18n", "RtlHardcoded")
     fun create_set(widthRegulation: Double, heightRegulation: Double,data_type:String): MutableList<layouts_set> {
         var layouts = emptyArray<LinearLayout>()
         var data = read_from_file(data_type)
         if (data.isNullOrEmpty()){
             println("is empty")
-            var tmp_data = "1,fuck,hello"
+            val tmp_data = ""
             try {
                 val fileOutputStream: FileOutputStream = this.openFileOutput(data_type, Context.MODE_PRIVATE)
                 fileOutputStream.write(tmp_data.toByteArray())
@@ -446,20 +447,46 @@ topLayout.addView(button_layout)
                         setMargins(20, 20, 20, 20)
                     }
 
-                    addView(TextView(this@MainActivity).apply {
-                        text = data[i][0]
-                        textSize = 35F
-                        textAlignment = View.TEXT_ALIGNMENT_CENTER
-                        layoutParams = LinearLayout.LayoutParams(
-                            LinearLayout.LayoutParams.MATCH_PARENT,
-                            150
-                        )
-                    })
+                    addView(
+                        RelativeLayout(this@MainActivity).apply {
+                            layoutParams = LinearLayout.LayoutParams(
+                                LinearLayout.LayoutParams.MATCH_PARENT,
+                                150
+                            )
 
-                    addView(CheckBox(this@MainActivity).apply {
+                            addView(TextView(this@MainActivity).apply {
+                                text = data[i][0]
+                                layoutParams = RelativeLayout.LayoutParams(
+                                    RelativeLayout.LayoutParams.WRAP_CONTENT,
+                                    RelativeLayout.LayoutParams.WRAP_CONTENT
+                                ).apply {
+                                    addRule(RelativeLayout.ALIGN_PARENT_TOP)
+                                    addRule(RelativeLayout.ALIGN_PARENT_START)
+                                }
+                            })
+
+                            addView(TextView(this@MainActivity).apply {
+                                text = "X"
+                                layoutParams = RelativeLayout.LayoutParams(
+                                    RelativeLayout.LayoutParams.WRAP_CONTENT,
+                                    RelativeLayout.LayoutParams.WRAP_CONTENT
+                                ).apply {
+                                    addRule(RelativeLayout.ALIGN_PARENT_TOP)
+                                    addRule(RelativeLayout.ALIGN_PARENT_END)
+                                }
+                                setOnClickListener({
+
+                                })
+                            })
+                        }
+                    )
+
+
+
+                    val check_box = CheckBox(this@MainActivity).apply {
                         text = "complete"
                         isChecked = false
-                    })
+                    }
                 }
 
                 if (layouts.size >= 3) {
@@ -507,7 +534,7 @@ topLayout.addView(button_layout)
     private fun read_from_file(file:String):MutableList<List<String>>{
 
         if(!this.getFileStreamPath(file).exists()){
-            var data = "1,fuck,hello"
+            val data = ""
             try {
                 val fileOutputStream: FileOutputStream = this.openFileOutput("weekly.csv", Context.MODE_PRIVATE)
                 fileOutputStream.write(data.toByteArray())

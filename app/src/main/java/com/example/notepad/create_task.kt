@@ -8,21 +8,20 @@ import android.graphics.Color
 import android.os.Bundle
 import android.view.Gravity
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
+import android.widget.PopupMenu
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import java.io.FileOutputStream
 import java.io.IOException
 
 class Create_task : DialogFragment(){
-    val title = ""
-    val description = ""
-    val dificulty = ""
-    val time_limit = ""
+   private var which_file = ""
     @SuppressLint("UseRequireInsteadOfGet")
     private var onDismissFunction: () -> Unit = {}
 
@@ -83,12 +82,54 @@ class Create_task : DialogFragment(){
             val description_text = EditText(context).apply {
                 setTextColor(Color.BLACK)
             }
+            val select_file = EditText(requireContext()).apply{
+                id = View.generateViewId()
+                setOnClickListener {
+                    val popupMenu = PopupMenu(requireContext(), it)
+
+                    // Dynamically add menu items to the PopupMenu
+                    val menu = popupMenu.menu
+                    menu.add(0, 1, 0, "daily")
+                    menu.add(0, 2, 1, "weekly")
+                    menu.add(0, 3, 2, "yearly")
+                    menu.add(0, 4, 3, "custom")
+
+                    // Set a listener for the menu items
+                    popupMenu.setOnMenuItemClickListener { item: MenuItem ->
+                        when (item.itemId) {
+                            1 -> {
+                                which_file = "daily.csv"
+                                true
+                            }
+
+                            2 -> {
+                                which_file = "weekly.csv"
+                                true
+                            }
+
+                            3 -> {
+                                which_file = "yearly.csv"
+                                true
+                            }
+                            4 -> {
+
+                                true
+                            }
+
+                            else -> false
+                        }
+                    }
+
+                    // Show the menu
+                    popupMenu.show()
+                }
+            }
 
             val submit_button = Button(context).apply {
                 text = "Close"
                 setTextColor(Color.BLACK)
                 setOnClickListener {
-                    add_task((title_text.text.toString()+","+description_text.text.toString()))
+                    add_task((title_text.text.toString()+","+description_text.text.toString()),which_file)
                     println("should first")
                     dismiss()
                 }
@@ -98,16 +139,19 @@ class Create_task : DialogFragment(){
             addView(title_text)
             addView(description_title)
             addView(description_text)
+            addView(select_file)
             addView(submit_button)
         }
     }
 
     @SuppressLint("SuspiciousIndentation")
-    fun add_task(data:String) {
+    fun add_task(data:String,file:String) {
         println("updated")
             try {
-                val fileOutputStream: FileOutputStream = requireContext().openFileOutput("weekly.csv", Context.MODE_APPEND)
+
+                val fileOutputStream: FileOutputStream = requireContext().openFileOutput(file, Context.MODE_APPEND)
                 fileOutputStream.write(data.toByteArray())
+
                 fileOutputStream.write(System.lineSeparator().toByteArray())
                 fileOutputStream.close()
             } catch (e: IOException) {
