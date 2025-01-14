@@ -23,7 +23,7 @@ import java.io.InputStreamReader
 import java.util.stream.IntStream.range
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(),Create_task.OnTaskActionListener {
 
 
     @SuppressLint("SetTextI18n")
@@ -64,6 +64,8 @@ class MainActivity : AppCompatActivity() {
                 ConstraintLayout.LayoutParams.WRAP_CONTENT
             )
         }
+
+
 
         val daily_quest_gallery = LinearLayout(this).apply {
             setBackgroundColor(Color.BLACK)
@@ -247,12 +249,13 @@ topLayout.addView(button_layout)
                 LinearLayout.LayoutParams.MATCH_PARENT
             )
             setOnClickListener {
-                val dialog = Create_task(this@MainActivity)
+                val dialog = Create_task()
                 dialog.show(supportFragmentManager, "CustomSizeBottomSheetDialog")
 
             }
 
         }
+
         val bottom_button_right = LinearLayout(this).apply {
             id = View.generateViewId()
             setBackgroundColor(Color.CYAN)
@@ -327,6 +330,7 @@ topLayout.addView(button_layout)
 
         // Set the layout as the content view
         setContentView(constraintLayout)
+
     }
 
     // Function to write content to a file
@@ -341,7 +345,8 @@ topLayout.addView(button_layout)
         }
     }
 
-    fun move_gallery(int: Int, quest_gallery:LinearLayout, task_array:MutableList<layouts_set>, which_array:Int) {
+
+     fun move_gallery(int: Int, quest_gallery:LinearLayout, task_array:MutableList<layouts_set>, which_array:Int) {
        println("moved")
         quest_gallery.removeAllViews()
         when(which_array){
@@ -395,6 +400,8 @@ topLayout.addView(button_layout)
             tasks = create_set(width_regulation,height_regulation,which_task)
         return tasks
     }
+
+
 
     @SuppressLint("SetTextI18n")
     fun create_set(widthRegulation: Double, heightRegulation: Double,data_type:String): MutableList<layouts_set> {
@@ -529,4 +536,10 @@ println(data.toString())
             return data
 
     }
+
+
+    override fun onMoveGallery(direction: Int) {
+        TODO("Not yet implemented")
+    }
+
 }

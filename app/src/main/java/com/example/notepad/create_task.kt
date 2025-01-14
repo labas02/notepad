@@ -17,19 +17,18 @@ import androidx.fragment.app.DialogFragment
 import java.io.FileOutputStream
 import java.io.IOException
 
-class Create_task(context: Context) : DialogFragment() {
+class Create_task() : DialogFragment(){
     val title = ""
     val description = ""
     val dificulty = ""
     val time_limit = ""
     @SuppressLint("UseRequireInsteadOfGet")
 
-    interface OnFragmentClosedListener {
-        fun onFragmentClosed() // Method that the activity will implement
+    interface OnTaskActionListener {
+        fun onMoveGallery(direction: Int)
     }
 
-    // Create a variable to hold the listener
-    private var listener: OnFragmentClosedListener? = null
+    private var listener: OnTaskActionListener? = null
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState)
@@ -54,7 +53,6 @@ class Create_task(context: Context) : DialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
         return LinearLayout(requireContext()).apply {
             setBackgroundColor(Color.CYAN)
             orientation = LinearLayout.VERTICAL
@@ -75,7 +73,9 @@ class Create_task(context: Context) : DialogFragment() {
                 text = "Close"
                 setOnClickListener {
                     add_task()
-                    dismiss() }
+                    listener?.onMoveGallery(0)
+                    dismiss()
+                }
             })
         }
     }
