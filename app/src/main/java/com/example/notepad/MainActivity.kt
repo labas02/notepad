@@ -23,8 +23,7 @@ import java.io.InputStreamReader
 import java.util.stream.IntStream.range
 
 
-class MainActivity : AppCompatActivity(),Create_task.OnTaskActionListener {
-
+class MainActivity : AppCompatActivity(){
 
     @SuppressLint("SetTextI18n")
 
@@ -36,8 +35,8 @@ class MainActivity : AppCompatActivity(),Create_task.OnTaskActionListener {
 
         super.onCreate(savedInstanceState)
 
-        val daily_task_array = crete_tasks("daily.csv")
-        val weekly_task_array = crete_tasks("weekly.csv")
+        var daily_task_array = crete_tasks("daily.csv")
+        var weekly_task_array = crete_tasks("weekly.csv")
 
         val constraintLayout = ConstraintLayout(this).apply {
             layoutParams = ConstraintLayout.LayoutParams(
@@ -239,6 +238,14 @@ topLayout.addView(button_layout)
             )
         }
 
+        fun reset_data(){
+            println("should't first")
+            daily_task_array = crete_tasks("daily.csv")
+            weekly_task_array = crete_tasks("weekly.csv")
+
+            move_gallery(0,daily_quest_gallery,daily_task_array,1)
+            move_gallery(0,weekly_quest_gallery,weekly_task_array,2)
+        }
 
         val bottom_button_left = LinearLayout(this).apply {
             id = View.generateViewId()
@@ -250,6 +257,7 @@ topLayout.addView(button_layout)
             )
             setOnClickListener {
                 val dialog = Create_task()
+                dialog.setOnDismissFunction { reset_data() }
                 dialog.show(supportFragmentManager, "CustomSizeBottomSheetDialog")
 
             }
@@ -535,11 +543,6 @@ topLayout.addView(button_layout)
 println(data.toString())
             return data
 
-    }
-
-
-    override fun onMoveGallery(direction: Int) {
-        TODO("Not yet implemented")
     }
 
 }

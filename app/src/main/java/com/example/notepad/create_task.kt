@@ -3,6 +3,7 @@ package com.example.notepad
 import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.Context
+import android.content.DialogInterface
 import android.graphics.Color
 import android.os.Bundle
 import android.view.Gravity
@@ -17,18 +18,22 @@ import androidx.fragment.app.DialogFragment
 import java.io.FileOutputStream
 import java.io.IOException
 
-class Create_task() : DialogFragment(){
+class Create_task : DialogFragment(){
     val title = ""
     val description = ""
     val dificulty = ""
     val time_limit = ""
     @SuppressLint("UseRequireInsteadOfGet")
+    private var onDismissFunction: () -> Unit = {}
 
-    interface OnTaskActionListener {
-        fun onMoveGallery(direction: Int)
+    fun setOnDismissFunction(block: () -> Unit){
+        onDismissFunction = block
     }
 
-    private var listener: OnTaskActionListener? = null
+    override fun onDismiss(dialog: DialogInterface) {
+        onDismissFunction()
+        super.onDismiss(dialog)
+    }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState)
@@ -58,35 +63,52 @@ class Create_task() : DialogFragment(){
             orientation = LinearLayout.VERTICAL
             setPadding(16, 16, 16, 16)
 
-            addView(TextView(context).apply {
+            val title = TextView(context).apply {
+                setTextColor(Color.BLACK)
                 text = "create new task"
                 textSize = 20f
                 gravity = Gravity.CENTER
-            })
-            addView(TextView(context).apply {
+            }
+            val title_title = TextView(context).apply {
+                setTextColor(Color.BLACK)
                 text = "set title"
-            })
-            addView(EditText(context).apply {
+            }
+            val title_text = EditText(context).apply {
+                setTextColor(Color.BLACK)
+            }
+            val description_title = TextView(context).apply {
+                text = "set description"
+                setTextColor(Color.BLACK)
+            }
+            val description_text = EditText(context).apply {
+                setTextColor(Color.BLACK)
+            }
 
-            })
-            addView(Button(context).apply {
+            val submit_button = Button(context).apply {
                 text = "Close"
+                setTextColor(Color.BLACK)
                 setOnClickListener {
-                    add_task()
-                    listener?.onMoveGallery(0)
+                    add_task((title_text.text.toString()+","+description_text.text.toString()))
+                    println("should first")
                     dismiss()
                 }
-            })
+            }
+            addView(title)
+            addView(title_title)
+            addView(title_text)
+            addView(description_title)
+            addView(description_text)
+            addView(submit_button)
         }
     }
 
     @SuppressLint("SuspiciousIndentation")
-    fun add_task() {
+    fun add_task(data:String) {
         println("updated")
-    var data = "1,fuck,hello"
             try {
-                val fileOutputStream: FileOutputStream = requireContext().openFileOutput("weekly", Context.MODE_PRIVATE)
+                val fileOutputStream: FileOutputStream = requireContext().openFileOutput("weekly.csv", Context.MODE_APPEND)
                 fileOutputStream.write(data.toByteArray())
+                fileOutputStream.write(System.lineSeparator().toByteArray())
                 fileOutputStream.close()
             } catch (e: IOException) {
                 e.printStackTrace()
