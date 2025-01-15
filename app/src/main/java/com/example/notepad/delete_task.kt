@@ -75,7 +75,7 @@ class Delete_task(val data: MutableList<List<String>>, val file: String, val avo
     @SuppressLint("SuspiciousIndentation")
     fun remove_task() {
             val fileOutputStream: FileOutputStream = requireContext().openFileOutput(file, Context.MODE_PRIVATE)
-                    for (i in range(0,data.size-1)){
+                    for (i in range(0,data.size )){
                         if (i != avoid) {
                             fileOutputStream.write((data[i][0] + "," + data[i][1]).toByteArray())
                             fileOutputStream.write(System.lineSeparator().toByteArray())

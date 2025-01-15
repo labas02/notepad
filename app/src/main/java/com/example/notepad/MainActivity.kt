@@ -30,10 +30,21 @@ class MainActivity : AppCompatActivity(){
 
     var daily_task_offset = 0
     var weekly_task_offset = 0
-
+    lateinit var daily_quest_gallery :LinearLayout
+    lateinit var weekly_quest_gallery :LinearLayout
+    lateinit var daily_task_array :MutableList<layouts_set>
+    lateinit var weekly_task_array :MutableList<layouts_set>
     @SuppressLint("RtlHardcoded")
-    override fun onCreate(savedInstanceState: Bundle?) {
 
+    fun reset_data(){
+        daily_task_array = create_tasks("daily.csv")
+        weekly_task_array = create_tasks("weekly.csv")
+
+        move_gallery(0,daily_quest_gallery,daily_task_array,1)
+        move_gallery(0,weekly_quest_gallery,weekly_task_array,2)
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         /*
@@ -53,8 +64,8 @@ class MainActivity : AppCompatActivity(){
         fileOutputStream.close()
 
          */
-        var daily_task_array = crete_tasks("daily.csv")
-        var weekly_task_array = crete_tasks("weekly.csv")
+        var daily_task_array = create_tasks("daily.csv")
+        var weekly_task_array = create_tasks("weekly.csv")
 
         val constraintLayout = ConstraintLayout(this).apply {
             layoutParams = ConstraintLayout.LayoutParams(
@@ -84,7 +95,7 @@ class MainActivity : AppCompatActivity(){
 
 
 
-        val daily_quest_gallery = LinearLayout(this).apply {
+        daily_quest_gallery = LinearLayout(this).apply {
             setBackgroundColor(Color.BLACK)
             id = View.generateViewId()
             gravity = Gravity.CENTER
@@ -138,7 +149,7 @@ class MainActivity : AppCompatActivity(){
             )
         }
 
-        val weekly_quest_gallery = LinearLayout(this).apply {
+        weekly_quest_gallery = LinearLayout(this).apply {
             setBackgroundColor(Color.BLACK)
             id = View.generateViewId()
             gravity = Gravity.CENTER
@@ -256,13 +267,6 @@ topLayout.addView(button_layout)
             )
         }
 
-        fun reset_data(){
-            daily_task_array = crete_tasks("daily.csv")
-            weekly_task_array = crete_tasks("weekly.csv")
-
-            move_gallery(0,daily_quest_gallery,daily_task_array,1)
-            move_gallery(0,weekly_quest_gallery,weekly_task_array,2)
-        }
 
         val bottom_button_left = LinearLayout(this).apply {
             id = View.generateViewId()
@@ -371,7 +375,7 @@ topLayout.addView(button_layout)
     }
 
 
-     fun move_gallery(int: Int, quest_gallery:LinearLayout, task_array:MutableList<layouts_set>, which_array:Int) {
+     fun move_gallery(int: Int, quest_gallery: LinearLayout, task_array:MutableList<layouts_set>, which_array:Int) {
        println("moved")
         quest_gallery.removeAllViews()
         when(which_array){
@@ -416,7 +420,7 @@ topLayout.addView(button_layout)
         val layout3: LinearLayout
     )
 
-        fun crete_tasks(which_task:String): MutableList<layouts_set> {
+        fun create_tasks(which_task:String): MutableList<layouts_set> {
         val tasks: MutableList<layouts_set>
         val width_regulation = 4.5
         val height_regulation = 7.8
@@ -492,32 +496,7 @@ topLayout.addView(button_layout)
                                             setOnClickListener({
                                               val dialog = Delete_task(data, data_type,i)
                                                 dialog.setOnDismissFunction {
-                                                    val tasks: MutableList<layouts_set>
-                                                    val width_regulation = 4.5
-                                                    val height_regulation = 7.8
-                                                    tasks = create_set(width_regulation,height_regulation,"daily.csv")
-                                                    val tasks2 = create_set(width_regulation,height_regulation,"weekly.csv")
-
-                                                    move_gallery(0,
-                                                        LinearLayout(this@MainActivity).apply {
-                                                            setBackgroundColor(Color.BLACK)
-                                                            id = View.generateViewId()
-                                                            gravity = Gravity.CENTER
-                                                            layoutParams = LinearLayout.LayoutParams(
-                                                                LinearLayout.LayoutParams.MATCH_PARENT,
-                                                                LinearLayout.LayoutParams.MATCH_PARENT)
-
-                                                        },tasks,1)
-                                                        move_gallery(0,
-                                                        LinearLayout(this@MainActivity).apply {
-                                                            setBackgroundColor(Color.BLACK)
-                                                            id = View.generateViewId()
-                                                            gravity = Gravity.CENTER
-                                                            layoutParams = LinearLayout.LayoutParams(
-                                                                LinearLayout.LayoutParams.MATCH_PARENT,
-                                                                LinearLayout.LayoutParams.MATCH_PARENT)
-
-                                                        },tasks2,2)
+                                                  reset_data()
                                                 }
                                                 dialog.show(supportFragmentManager, "CustomSizeBottomSheetDialog")
 
