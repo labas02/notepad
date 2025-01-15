@@ -36,6 +36,23 @@ class MainActivity : AppCompatActivity(){
 
         super.onCreate(savedInstanceState)
 
+        /*
+        val fileOutputStream: FileOutputStream = this.openFileOutput("weekly.csv", Context.MODE_PRIVATE)
+
+                fileOutputStream.write("hello,fuck you".toByteArray())
+                fileOutputStream.write(System.lineSeparator().toByteArray())
+
+
+        fileOutputStream.close()
+        val fileOutputStream1: FileOutputStream = this.openFileOutput("daily.csv", Context.MODE_PRIVATE)
+
+        fileOutputStream1.write("hello, fuck you".toByteArray())
+        fileOutputStream1.write(System.lineSeparator().toByteArray())
+
+
+        fileOutputStream.close()
+
+         */
         var daily_task_array = crete_tasks("daily.csv")
         var weekly_task_array = crete_tasks("weekly.csv")
 
@@ -240,7 +257,6 @@ topLayout.addView(button_layout)
         }
 
         fun reset_data(){
-            println("should't first")
             daily_task_array = crete_tasks("daily.csv")
             weekly_task_array = crete_tasks("weekly.csv")
 
@@ -400,8 +416,7 @@ topLayout.addView(button_layout)
         val layout3: LinearLayout
     )
 
-    @SuppressLint("SetTextI18n", "SuspiciousIndentation")
-    private fun crete_tasks(which_task:String): MutableList<layouts_set> {
+        fun crete_tasks(which_task:String): MutableList<layouts_set> {
         val tasks: MutableList<layouts_set>
         val width_regulation = 4.5
         val height_regulation = 7.8
@@ -411,9 +426,8 @@ topLayout.addView(button_layout)
     }
 
 
-
-    @SuppressLint("SetTextI18n", "RtlHardcoded")
-    fun create_set(widthRegulation: Double, heightRegulation: Double,data_type:String): MutableList<layouts_set> {
+    @SuppressLint("SuspiciousIndentation")
+    fun create_set(widthRegulation: Double, heightRegulation: Double, data_type:String): MutableList<layouts_set> {
         var layouts = emptyArray<LinearLayout>()
         var data = read_from_file(data_type)
         if (data.isNullOrEmpty()){
@@ -467,6 +481,7 @@ topLayout.addView(button_layout)
 
                             addView(TextView(this@MainActivity).apply {
                                 text = "X"
+                                setTextSize(25f)
                                 layoutParams = RelativeLayout.LayoutParams(
                                     RelativeLayout.LayoutParams.WRAP_CONTENT,
                                     RelativeLayout.LayoutParams.WRAP_CONTENT
@@ -474,12 +489,43 @@ topLayout.addView(button_layout)
                                     addRule(RelativeLayout.ALIGN_PARENT_TOP)
                                     addRule(RelativeLayout.ALIGN_PARENT_END)
                                 }
-                                setOnClickListener({
+                                            setOnClickListener({
+                                              val dialog = Delete_task(data, data_type,i)
+                                                dialog.setOnDismissFunction {
+                                                    val tasks: MutableList<layouts_set>
+                                                    val width_regulation = 4.5
+                                                    val height_regulation = 7.8
+                                                    tasks = create_set(width_regulation,height_regulation,"daily.csv")
+                                                    val tasks2 = create_set(width_regulation,height_regulation,"weekly.csv")
 
+                                                    move_gallery(0,
+                                                        LinearLayout(this@MainActivity).apply {
+                                                            setBackgroundColor(Color.BLACK)
+                                                            id = View.generateViewId()
+                                                            gravity = Gravity.CENTER
+                                                            layoutParams = LinearLayout.LayoutParams(
+                                                                LinearLayout.LayoutParams.MATCH_PARENT,
+                                                                LinearLayout.LayoutParams.MATCH_PARENT)
+
+                                                        },tasks,1)
+                                                        move_gallery(0,
+                                                        LinearLayout(this@MainActivity).apply {
+                                                            setBackgroundColor(Color.BLACK)
+                                                            id = View.generateViewId()
+                                                            gravity = Gravity.CENTER
+                                                            layoutParams = LinearLayout.LayoutParams(
+                                                                LinearLayout.LayoutParams.MATCH_PARENT,
+                                                                LinearLayout.LayoutParams.MATCH_PARENT)
+
+                                                        },tasks2,2)
+                                                }
+                                                dialog.show(supportFragmentManager, "CustomSizeBottomSheetDialog")
+
+
+                                    })
                                 })
                             })
-                        }
-                    )
+
 
 
 
@@ -536,7 +582,7 @@ topLayout.addView(button_layout)
         if(!this.getFileStreamPath(file).exists()){
             val data = ""
             try {
-                val fileOutputStream: FileOutputStream = this.openFileOutput("weekly.csv", Context.MODE_PRIVATE)
+                val fileOutputStream: FileOutputStream = this.openFileOutput(file, Context.MODE_PRIVATE)
                 fileOutputStream.write(data.toByteArray())
                 fileOutputStream.close()
             } catch (e: IOException) {
