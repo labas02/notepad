@@ -27,48 +27,49 @@ class MainActivity : AppCompatActivity() {
 
     @SuppressLint("SetTextI18n")
 
-    var daily_task_offset = 0
-    var weekly_task_offset = 0
-    var monthly_task_offset = 0
-    var yearly_task_offset = 0
-    var custom_task_offset = 0
+    var dailyTaskOffset = 0
+    private var weeklyTaskOffset = 0
+    private var monthlyTaskOffset = 0
+    private var yearlyTaskOffset = 0
+    private var customTaskOffset = 0
 
-    lateinit var daily_quest_gallery: LinearLayout
-    lateinit var weekly_quest_gallery: LinearLayout
-    lateinit var monthly_quest_gallery: LinearLayout
-    lateinit var yearly_quest_gallery: LinearLayout
-    lateinit var custom_quest_gallery: LinearLayout
+    private lateinit var dailyQuestGallery: LinearLayout
+    private lateinit var weeklyQuestGallery: LinearLayout
+    private lateinit var monthlyQuestGallery: LinearLayout
+    private lateinit var yearlyQuestGallery: LinearLayout
+    private lateinit var customQuestGallery: LinearLayout
 
-    lateinit var daily_task_array: MutableList<layouts_set>
-    lateinit var weekly_task_array: MutableList<layouts_set>
-    lateinit var monthly_task_array: MutableList<layouts_set>
-    lateinit var yearly_task_array: MutableList<layouts_set>
-    lateinit var custom_task_array: MutableList<layouts_set>
+    private lateinit var dailyTaskArray: MutableList<layouts_set>
+    private lateinit var weeklyTaskArray: MutableList<layouts_set>
+    private lateinit var monthlyTaskArray: MutableList<layouts_set>
+    private lateinit var yearlyTaskArray: MutableList<layouts_set>
+    private lateinit var customTaskArray: MutableList<layouts_set>
 
     @SuppressLint("RtlHardcoded")
 
     fun reset_data() {
-        daily_task_array = create_tasks("daily.csv")
-        weekly_task_array = create_tasks("weekly.csv")
+        dailyTaskArray = create_tasks("daily.csv")
+        weeklyTaskArray = create_tasks("weekly.csv")
 
-        monthly_task_array = create_tasks("monthly.csv")
-        yearly_task_array = create_tasks("yearly.csv")
-        custom_task_array = create_tasks("custom.csv")
+        monthlyTaskArray = create_tasks("monthly.csv")
+        yearlyTaskArray = create_tasks("yearly.csv")
+        customTaskArray = create_tasks("custom.csv")
 
 
 
-        move_gallery(0, daily_quest_gallery, daily_task_array, 1)
-        move_gallery(0, weekly_quest_gallery, weekly_task_array, 2)
+        move_gallery(0, dailyQuestGallery, dailyTaskArray, 1)
+        move_gallery(0, weeklyQuestGallery, weeklyTaskArray, 2)
 
-              move_gallery(0,monthly_quest_gallery,monthly_task_array,3)
-              move_gallery(0,yearly_quest_gallery,yearly_task_array,4)
-              move_gallery(0,custom_quest_gallery,custom_task_array,5)
+              move_gallery(0,monthlyQuestGallery,monthlyTaskArray,3)
+              move_gallery(0,yearlyQuestGallery,yearlyTaskArray,4)
+              move_gallery(0,customQuestGallery,customTaskArray,5)
 
 
 
     }
 
 
+    @SuppressLint("RtlHardcoded")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 /*
@@ -81,11 +82,11 @@ class MainActivity : AppCompatActivity() {
         fileOutputStream.close()
 */
 
-        daily_task_array = create_tasks("daily.csv")
-        weekly_task_array = create_tasks("weekly.csv")
-        monthly_task_array = create_tasks("monthly.csv")
-        yearly_task_array = create_tasks("yearly.csv")
-        custom_task_array = create_tasks("custom.csv")
+        dailyTaskArray = create_tasks("daily.csv")
+        weeklyTaskArray = create_tasks("weekly.csv")
+        monthlyTaskArray = create_tasks("monthly.csv")
+        yearlyTaskArray = create_tasks("yearly.csv")
+        customTaskArray = create_tasks("custom.csv")
 
         val constraintLayout = ConstraintLayout(this).apply {
             layoutParams = ConstraintLayout.LayoutParams(
@@ -115,7 +116,7 @@ class MainActivity : AppCompatActivity() {
 
 
 
-        daily_quest_gallery = LinearLayout(this).apply {
+        dailyQuestGallery = LinearLayout(this).apply {
             setBackgroundColor(Color.BLACK)
             id = View.generateViewId()
             gravity = Gravity.CENTER
@@ -136,7 +137,7 @@ class MainActivity : AppCompatActivity() {
             )
 
             setOnClickListener {
-                this@MainActivity.move_gallery(-1, daily_quest_gallery, daily_task_array, 1)
+                this@MainActivity.move_gallery(-1, dailyQuestGallery, dailyTaskArray, 1)
             }
 
         }
@@ -151,15 +152,15 @@ class MainActivity : AppCompatActivity() {
             )
 
             setOnClickListener {
-                this@MainActivity.move_gallery(1, daily_quest_gallery, daily_task_array, 1)
+                this@MainActivity.move_gallery(1, dailyQuestGallery, dailyTaskArray, 1)
             }
 
         }
 
-        move_gallery(0, daily_quest_gallery, daily_task_array, 1)
+        move_gallery(0, dailyQuestGallery, dailyTaskArray, 1)
 
         daily_layout.addView(daily_left_arrow)
-        daily_layout.addView(daily_quest_gallery)
+        daily_layout.addView(dailyQuestGallery)
         daily_layout.addView(daily_right_arrow)
 
         val weekly_layout = LinearLayout(this).apply {
@@ -172,7 +173,7 @@ class MainActivity : AppCompatActivity() {
             )
         }
 
-        weekly_quest_gallery = LinearLayout(this).apply {
+        weeklyQuestGallery = LinearLayout(this).apply {
             setBackgroundColor(Color.BLACK)
             id = View.generateViewId()
             gravity = Gravity.CENTER
@@ -193,7 +194,7 @@ class MainActivity : AppCompatActivity() {
             )
 
             setOnClickListener {
-                this@MainActivity.move_gallery(-1, weekly_quest_gallery, weekly_task_array, 2)
+                this@MainActivity.move_gallery(-1, weeklyQuestGallery, weeklyTaskArray, 2)
             }
 
         }
@@ -208,17 +209,17 @@ class MainActivity : AppCompatActivity() {
             )
 
             setOnClickListener {
-                this@MainActivity.move_gallery(1, weekly_quest_gallery, weekly_task_array, 2)
+                this@MainActivity.move_gallery(1, weeklyQuestGallery, weeklyTaskArray, 2)
             }
 
         }
 
 
 
-        move_gallery(0, weekly_quest_gallery, weekly_task_array, 2)
+        move_gallery(0, weeklyQuestGallery, weeklyTaskArray, 2)
 
         weekly_layout.addView(weekly_left_arrow)
-        weekly_layout.addView(weekly_quest_gallery)
+        weekly_layout.addView(weeklyQuestGallery)
         weekly_layout.addView(weekly_right_arrow)
 
         val monthly_layout = LinearLayout(this).apply {
@@ -233,7 +234,7 @@ class MainActivity : AppCompatActivity() {
 
 
 
-        monthly_quest_gallery = LinearLayout(this).apply {
+        monthlyQuestGallery = LinearLayout(this).apply {
             setBackgroundColor(Color.BLACK)
             id = View.generateViewId()
             gravity = Gravity.CENTER
@@ -254,7 +255,7 @@ class MainActivity : AppCompatActivity() {
             )
 
             setOnClickListener {
-                this@MainActivity.move_gallery(-1, monthly_quest_gallery, monthly_task_array, 3)
+                this@MainActivity.move_gallery(-1, monthlyQuestGallery, monthlyTaskArray, 3)
             }
 
         }
@@ -269,15 +270,15 @@ class MainActivity : AppCompatActivity() {
             )
 
             setOnClickListener {
-                this@MainActivity.move_gallery(1, monthly_quest_gallery, monthly_task_array, 3)
+                this@MainActivity.move_gallery(1, monthlyQuestGallery, monthlyTaskArray, 3)
             }
 
         }
 
-        move_gallery(0, monthly_quest_gallery, monthly_task_array, 3)
+        move_gallery(0, monthlyQuestGallery, monthlyTaskArray, 3)
 
         monthly_layout.addView(monthly_left_arrow)
-        monthly_layout.addView(monthly_quest_gallery)
+        monthly_layout.addView(monthlyQuestGallery)
         monthly_layout.addView(monthly_right_arrow)
 
         val yearly_layout = LinearLayout(this).apply {
@@ -292,7 +293,7 @@ class MainActivity : AppCompatActivity() {
 
 
 
-        yearly_quest_gallery = LinearLayout(this).apply {
+        yearlyQuestGallery = LinearLayout(this).apply {
             setBackgroundColor(Color.BLACK)
             id = View.generateViewId()
             gravity = Gravity.CENTER
@@ -313,7 +314,7 @@ class MainActivity : AppCompatActivity() {
             )
 
             setOnClickListener {
-                this@MainActivity.move_gallery(-1, yearly_quest_gallery, yearly_task_array, 4)
+                this@MainActivity.move_gallery(-1, yearlyQuestGallery, yearlyTaskArray, 4)
             }
 
         }
@@ -328,15 +329,15 @@ class MainActivity : AppCompatActivity() {
             )
 
             setOnClickListener {
-                this@MainActivity.move_gallery(1, yearly_quest_gallery, yearly_task_array, 4)
+                this@MainActivity.move_gallery(1, yearlyQuestGallery, yearlyTaskArray, 4)
             }
 
         }
 
-        move_gallery(0, yearly_quest_gallery, yearly_task_array, 4)
+        move_gallery(0, yearlyQuestGallery, yearlyTaskArray, 4)
 
         yearly_layout.addView(yearly_left_arrow)
-        yearly_layout.addView(yearly_quest_gallery)
+        yearly_layout.addView(yearlyQuestGallery)
         yearly_layout.addView(yearly_right_arrow)
 
         val custom_layout = LinearLayout(this).apply {
@@ -351,7 +352,7 @@ class MainActivity : AppCompatActivity() {
 
 
 
-        custom_quest_gallery = LinearLayout(this).apply {
+        customQuestGallery = LinearLayout(this).apply {
             setBackgroundColor(Color.BLACK)
             id = View.generateViewId()
             gravity = Gravity.CENTER
@@ -372,7 +373,7 @@ class MainActivity : AppCompatActivity() {
             )
 
             setOnClickListener {
-                this@MainActivity.move_gallery(-1, custom_quest_gallery, custom_task_array, 5)
+                this@MainActivity.move_gallery(-1, customQuestGallery, customTaskArray, 5)
             }
 
         }
@@ -387,18 +388,18 @@ class MainActivity : AppCompatActivity() {
             )
 
             setOnClickListener {
-                this@MainActivity.move_gallery(1, custom_quest_gallery, custom_task_array, 5)
+                this@MainActivity.move_gallery(1, customQuestGallery, customTaskArray, 5)
             }
 
         }
 
-        move_gallery(0, custom_quest_gallery, custom_task_array, 5)
+        move_gallery(0, customQuestGallery, customTaskArray, 5)
 
         custom_layout.addView(custom_left_arrow)
-        custom_layout.addView(custom_quest_gallery)
+        custom_layout.addView(customQuestGallery)
         custom_layout.addView(custom_right_arrow)
 
-        val spacer = LinearLayout(this).apply {
+        LinearLayout(this).apply {
             id = View.generateViewId()
             setBackgroundColor(Color.BLACK)
             layoutParams = ConstraintLayout.LayoutParams(
@@ -618,20 +619,8 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    // Function to write content to a file
-    private fun writeToFile(context: Context, fileName: String, content: String) {
-        try {
-            // Open a file output stream to the app's internal storage
-            val fileOutputStream: FileOutputStream = context.openFileOutput(fileName, MODE_PRIVATE)
-            fileOutputStream.write(content.toByteArray())
-            fileOutputStream.close()  // Close the file stream
-        } catch (e: IOException) {
-            e.printStackTrace()  // Handle any errors
-        }
-    }
 
-
-    fun move_gallery(
+    private fun move_gallery(
         int: Int,
         quest_gallery: LinearLayout,
         task_array: MutableList<layouts_set>,
@@ -642,14 +631,14 @@ class MainActivity : AppCompatActivity() {
         when (which_array) {
             1 -> {
                 //daily_offset
-                daily_task_offset += int
-                if (daily_task_offset > task_array.size-1) {
-                    daily_task_offset = 0
+                dailyTaskOffset += int
+                if (dailyTaskOffset > task_array.size-1) {
+                    dailyTaskOffset = 0
                 }
-                if (daily_task_offset <= 0) {
-                    daily_task_offset = task_array.size-1
+                if (dailyTaskOffset <= 0) {
+                    dailyTaskOffset = task_array.size-1
                 }
-                val current_set = task_array[daily_task_offset]
+                val current_set = task_array[dailyTaskOffset]
                 quest_gallery.addView(current_set.layout1)
                 quest_gallery.addView(current_set.layout2)
                 quest_gallery.addView(current_set.layout3)
@@ -657,28 +646,28 @@ class MainActivity : AppCompatActivity() {
 
             2 -> {
                 //weekly_offset
-                weekly_task_offset += int
-                if (weekly_task_offset > task_array.size-1) {
-                    weekly_task_offset = 0
+                weeklyTaskOffset += int
+                if (weeklyTaskOffset > task_array.size-1) {
+                    weeklyTaskOffset = 0
                 }
-                if (weekly_task_offset < 0) {
-                    weekly_task_offset = task_array.size-1
+                if (weeklyTaskOffset < 0) {
+                    weeklyTaskOffset = task_array.size-1
                 }
-                val current_set = task_array[weekly_task_offset]
+                val current_set = task_array[weeklyTaskOffset]
                 quest_gallery.addView(current_set.layout1)
                 quest_gallery.addView(current_set.layout2)
                 quest_gallery.addView(current_set.layout3)
 
             }
             3 -> {
-                monthly_task_offset += int
-                if (monthly_task_offset > task_array.size-1) {
-                    monthly_task_offset = 0
+                monthlyTaskOffset += int
+                if (monthlyTaskOffset > task_array.size-1) {
+                    monthlyTaskOffset = 0
                 }
-                if (monthly_task_offset < 0) {
-                    monthly_task_offset = task_array.size-1
+                if (monthlyTaskOffset < 0) {
+                    monthlyTaskOffset = task_array.size-1
                 }
-                val current_set = task_array[monthly_task_offset]
+                val current_set = task_array[monthlyTaskOffset]
                 quest_gallery.addView(current_set.layout1)
                 quest_gallery.addView(current_set.layout2)
                 quest_gallery.addView(current_set.layout3)
@@ -686,28 +675,28 @@ class MainActivity : AppCompatActivity() {
             }
             4 -> {
                 //weekly_offset
-                yearly_task_offset += int
-                if (yearly_task_offset > task_array.size-1) {
-                    yearly_task_offset = 0
+                yearlyTaskOffset += int
+                if (yearlyTaskOffset > task_array.size-1) {
+                    yearlyTaskOffset = 0
                 }
-                if (yearly_task_offset < 0) {
-                    yearly_task_offset = task_array.size-1
+                if (yearlyTaskOffset < 0) {
+                    yearlyTaskOffset = task_array.size-1
                 }
-                val current_set = task_array[yearly_task_offset]
+                val current_set = task_array[yearlyTaskOffset]
                 quest_gallery.addView(current_set.layout1)
                 quest_gallery.addView(current_set.layout2)
                 quest_gallery.addView(current_set.layout3)
 
             }
             5 -> {
-                custom_task_offset += int
-                if (custom_task_offset > task_array.size-1) {
-                    custom_task_offset = 0
+                customTaskOffset += int
+                if (customTaskOffset > task_array.size-1) {
+                    customTaskOffset = 0
                 }
-                if (custom_task_offset < 0) {
-                    custom_task_offset = task_array.size-1
+                if (customTaskOffset < 0) {
+                    customTaskOffset = task_array.size-1
                 }
-                val current_set = task_array[custom_task_offset]
+                val current_set = task_array[customTaskOffset]
                 quest_gallery.addView(current_set.layout1)
                 quest_gallery.addView(current_set.layout2)
                 quest_gallery.addView(current_set.layout3)
@@ -724,7 +713,7 @@ class MainActivity : AppCompatActivity() {
         val layout3: LinearLayout
     )
 
-    fun create_tasks(which_task: String): MutableList<layouts_set> {
+    private fun create_tasks(which_task: String): MutableList<layouts_set> {
         val tasks: MutableList<layouts_set>
         val width_regulation = 4.5
         val height_regulation = 7.8
@@ -794,7 +783,7 @@ class MainActivity : AppCompatActivity() {
 
                             addView(TextView(this@MainActivity).apply {
                                 text = "X"
-                                setTextSize(25f)
+                                textSize = 25f
                                 layoutParams = RelativeLayout.LayoutParams(
                                     RelativeLayout.LayoutParams.WRAP_CONTENT,
                                     RelativeLayout.LayoutParams.WRAP_CONTENT
