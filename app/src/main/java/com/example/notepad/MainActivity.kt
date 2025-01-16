@@ -50,54 +50,42 @@ class MainActivity : AppCompatActivity() {
     fun reset_data() {
         daily_task_array = create_tasks("daily.csv")
         weekly_task_array = create_tasks("weekly.csv")
-        /*
+
         monthly_task_array = create_tasks("monthly.csv")
         yearly_task_array = create_tasks("yearly.csv")
         custom_task_array = create_tasks("custom.csv")
 
 
-         */
+
         move_gallery(0, daily_quest_gallery, daily_task_array, 1)
         move_gallery(0, weekly_quest_gallery, weekly_task_array, 2)
-        /*
+
               move_gallery(0,monthly_quest_gallery,monthly_task_array,3)
               move_gallery(0,yearly_quest_gallery,yearly_task_array,4)
               move_gallery(0,custom_quest_gallery,custom_task_array,5)
 
 
-         */
+
     }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        /*
-        val fileOutputStream: FileOutputStream = this.openFileOutput("weekly.csv", Context.MODE_PRIVATE)
+/*
+        val fileOutputStream: FileOutputStream = this.openFileOutput("custom.csv", Context.MODE_PRIVATE)
 
                 fileOutputStream.write("hello,fuck you".toByteArray())
                 fileOutputStream.write(System.lineSeparator().toByteArray())
 
 
         fileOutputStream.close()
-        val fileOutputStream1: FileOutputStream = this.openFileOutput("daily.csv", Context.MODE_PRIVATE)
+*/
 
-        fileOutputStream1.write("hello, fuck you".toByteArray())
-        fileOutputStream1.write(System.lineSeparator().toByteArray())
-
-
-        fileOutputStream.close()
-
-         */
         daily_task_array = create_tasks("daily.csv")
         weekly_task_array = create_tasks("weekly.csv")
-        /*
         monthly_task_array = create_tasks("monthly.csv")
         yearly_task_array = create_tasks("yearly.csv")
         custom_task_array = create_tasks("custom.csv")
-
-
-         */
 
         val constraintLayout = ConstraintLayout(this).apply {
             layoutParams = ConstraintLayout.LayoutParams(
@@ -233,6 +221,183 @@ class MainActivity : AppCompatActivity() {
         weekly_layout.addView(weekly_quest_gallery)
         weekly_layout.addView(weekly_right_arrow)
 
+        val monthly_layout = LinearLayout(this).apply {
+            id = View.generateViewId()
+            setBackgroundColor(Color.MAGENTA)
+            setHorizontalGravity(Gravity.CENTER)
+            layoutParams = ConstraintLayout.LayoutParams(
+                ConstraintLayout.LayoutParams.MATCH_PARENT,
+                ConstraintLayout.LayoutParams.WRAP_CONTENT
+            )
+        }
+
+
+
+        monthly_quest_gallery = LinearLayout(this).apply {
+            setBackgroundColor(Color.BLACK)
+            id = View.generateViewId()
+            gravity = Gravity.CENTER
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT
+            )
+
+        }
+
+        val monthly_left_arrow = LinearLayout(this).apply {
+            setBackgroundColor(Color.BLUE)
+            id = View.generateViewId()
+            gravity = Gravity.START
+            layoutParams = ConstraintLayout.LayoutParams(
+                (context.resources.displayMetrics.widthPixels * 0.15).toInt(),
+                ConstraintLayout.LayoutParams.MATCH_PARENT
+            )
+
+            setOnClickListener {
+                this@MainActivity.move_gallery(-1, monthly_quest_gallery, monthly_task_array, 3)
+            }
+
+        }
+
+        val monthly_right_arrow = LinearLayout(this).apply {
+            setBackgroundColor(Color.BLUE)
+            id = View.generateViewId()
+            gravity = Gravity.START
+            layoutParams = ConstraintLayout.LayoutParams(
+                (context.resources.displayMetrics.widthPixels * 0.15).toInt(),
+                ConstraintLayout.LayoutParams.MATCH_PARENT
+            )
+
+            setOnClickListener {
+                this@MainActivity.move_gallery(1, monthly_quest_gallery, monthly_task_array, 3)
+            }
+
+        }
+
+        move_gallery(0, monthly_quest_gallery, monthly_task_array, 3)
+
+        monthly_layout.addView(monthly_left_arrow)
+        monthly_layout.addView(monthly_quest_gallery)
+        monthly_layout.addView(monthly_right_arrow)
+
+        val yearly_layout = LinearLayout(this).apply {
+            id = View.generateViewId()
+            setBackgroundColor(Color.MAGENTA)
+            setHorizontalGravity(Gravity.CENTER)
+            layoutParams = ConstraintLayout.LayoutParams(
+                ConstraintLayout.LayoutParams.MATCH_PARENT,
+                ConstraintLayout.LayoutParams.WRAP_CONTENT
+            )
+        }
+
+
+
+        yearly_quest_gallery = LinearLayout(this).apply {
+            setBackgroundColor(Color.BLACK)
+            id = View.generateViewId()
+            gravity = Gravity.CENTER
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT
+            )
+
+        }
+
+        val yearly_left_arrow = LinearLayout(this).apply {
+            setBackgroundColor(Color.BLUE)
+            id = View.generateViewId()
+            gravity = Gravity.START
+            layoutParams = ConstraintLayout.LayoutParams(
+                (context.resources.displayMetrics.widthPixels * 0.15).toInt(),
+                ConstraintLayout.LayoutParams.MATCH_PARENT
+            )
+
+            setOnClickListener {
+                this@MainActivity.move_gallery(-1, yearly_quest_gallery, yearly_task_array, 4)
+            }
+
+        }
+
+        val yearly_right_arrow = LinearLayout(this).apply {
+            setBackgroundColor(Color.BLUE)
+            id = View.generateViewId()
+            gravity = Gravity.START
+            layoutParams = ConstraintLayout.LayoutParams(
+                (context.resources.displayMetrics.widthPixels * 0.15).toInt(),
+                ConstraintLayout.LayoutParams.MATCH_PARENT
+            )
+
+            setOnClickListener {
+                this@MainActivity.move_gallery(1, yearly_quest_gallery, yearly_task_array, 4)
+            }
+
+        }
+
+        move_gallery(0, yearly_quest_gallery, yearly_task_array, 4)
+
+        yearly_layout.addView(yearly_left_arrow)
+        yearly_layout.addView(yearly_quest_gallery)
+        yearly_layout.addView(yearly_right_arrow)
+
+        val custom_layout = LinearLayout(this).apply {
+            id = View.generateViewId()
+            setBackgroundColor(Color.MAGENTA)
+            setHorizontalGravity(Gravity.CENTER)
+            layoutParams = ConstraintLayout.LayoutParams(
+                ConstraintLayout.LayoutParams.MATCH_PARENT,
+                ConstraintLayout.LayoutParams.WRAP_CONTENT
+            )
+        }
+
+
+
+        custom_quest_gallery = LinearLayout(this).apply {
+            setBackgroundColor(Color.BLACK)
+            id = View.generateViewId()
+            gravity = Gravity.CENTER
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT
+            )
+
+        }
+
+        val custom_left_arrow = LinearLayout(this).apply {
+            setBackgroundColor(Color.BLUE)
+            id = View.generateViewId()
+            gravity = Gravity.START
+            layoutParams = ConstraintLayout.LayoutParams(
+                (context.resources.displayMetrics.widthPixels * 0.15).toInt(),
+                ConstraintLayout.LayoutParams.MATCH_PARENT
+            )
+
+            setOnClickListener {
+                this@MainActivity.move_gallery(-1, custom_quest_gallery, custom_task_array, 5)
+            }
+
+        }
+
+        val custom_right_arrow = LinearLayout(this).apply {
+            setBackgroundColor(Color.BLUE)
+            id = View.generateViewId()
+            gravity = Gravity.START
+            layoutParams = ConstraintLayout.LayoutParams(
+                (context.resources.displayMetrics.widthPixels * 0.15).toInt(),
+                ConstraintLayout.LayoutParams.MATCH_PARENT
+            )
+
+            setOnClickListener {
+                this@MainActivity.move_gallery(1, custom_quest_gallery, custom_task_array, 5)
+            }
+
+        }
+
+        move_gallery(0, custom_quest_gallery, custom_task_array, 5)
+
+        custom_layout.addView(custom_left_arrow)
+        custom_layout.addView(custom_quest_gallery)
+        custom_layout.addView(custom_right_arrow)
+
         val spacer = LinearLayout(this).apply {
             id = View.generateViewId()
             setBackgroundColor(Color.BLACK)
@@ -343,7 +508,9 @@ class MainActivity : AppCompatActivity() {
         constraintLayout.addView(topLayout)
         constraintLayout.addView(daily_layout)
         constraintLayout.addView(weekly_layout)
-        constraintLayout.addView(spacer)
+        constraintLayout.addView(monthly_layout)
+        constraintLayout.addView(yearly_layout)
+        constraintLayout.addView(custom_layout)
         constraintLayout.addView(bottom_menu)
 
         // Define constraints
@@ -379,15 +546,42 @@ class MainActivity : AppCompatActivity() {
             ConstraintSet.START
         )
         set.connect(weekly_layout.id, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
+        //monthly
+        set.constrainPercentHeight(monthly_layout.id, 0.20f)
+        set.constrainPercentWidth(monthly_layout.id, 1f)
+        set.connect(monthly_layout.id, ConstraintSet.TOP, weekly_layout.id, ConstraintSet.BOTTOM)
+        set.connect(
+            monthly_layout.id,
+            ConstraintSet.START,
+            ConstraintSet.PARENT_ID,
+            ConstraintSet.START
+        )
+        set.connect(monthly_layout.id, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
+        //yearly
+        set.constrainPercentHeight(yearly_layout.id, 0.20f)
+        set.constrainPercentWidth(yearly_layout.id, 1f)
+        set.connect(yearly_layout.id, ConstraintSet.TOP, monthly_layout.id, ConstraintSet.BOTTOM)
+        set.connect(
+            yearly_layout.id,
+            ConstraintSet.START,
+            ConstraintSet.PARENT_ID,
+            ConstraintSet.START
+        )
+        set.connect(yearly_layout.id, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
+        //custom
+        set.constrainPercentHeight(custom_layout.id, 0.20f)
+        set.constrainPercentWidth(custom_layout.id, 1f)
+        set.connect(custom_layout.id, ConstraintSet.TOP, yearly_layout.id, ConstraintSet.BOTTOM)
+        set.connect(
+            custom_layout.id,
+            ConstraintSet.START,
+            ConstraintSet.PARENT_ID,
+            ConstraintSet.START
+        )
+        set.connect(custom_layout.id, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
 
-        //spacer
-        set.constrainPercentWidth(spacer.id, 0.20f)
-        set.constrainPercentHeight(spacer.id, 0.6f)
-        set.connect(spacer.id, ConstraintSet.TOP, weekly_layout.id, ConstraintSet.BOTTOM)
-        set.connect(spacer.id, ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START)
-        set.connect(spacer.id, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
-        // Bottom-left layout
-        set.connect(bottom_menu.id, ConstraintSet.TOP, spacer.id, ConstraintSet.BOTTOM)
+        // Bottom layout
+        set.connect(bottom_menu.id, ConstraintSet.TOP, custom_layout.id, ConstraintSet.BOTTOM)
         set.connect(
             bottom_menu.id,
             ConstraintSet.START,
@@ -459,7 +653,6 @@ class MainActivity : AppCompatActivity() {
                 quest_gallery.addView(current_set.layout1)
                 quest_gallery.addView(current_set.layout2)
                 quest_gallery.addView(current_set.layout3)
-
             }
 
             2 -> {
@@ -472,6 +665,49 @@ class MainActivity : AppCompatActivity() {
                     weekly_task_offset = task_array.size
                 }
                 val current_set = task_array[weekly_task_offset]
+                quest_gallery.addView(current_set.layout1)
+                quest_gallery.addView(current_set.layout2)
+                quest_gallery.addView(current_set.layout3)
+
+            }
+            3 -> {
+                monthly_task_offset += int
+                if (monthly_task_offset > task_array.size) {
+                    monthly_task_offset = 0
+                }
+                if (monthly_task_offset < 0) {
+                    monthly_task_offset = task_array.size
+                }
+                val current_set = task_array[monthly_task_offset]
+                quest_gallery.addView(current_set.layout1)
+                quest_gallery.addView(current_set.layout2)
+                quest_gallery.addView(current_set.layout3)
+
+            }
+            4 -> {
+                //weekly_offset
+                yearly_task_offset += int
+                if (yearly_task_offset > task_array.size) {
+                    yearly_task_offset = 0
+                }
+                if (yearly_task_offset < 0) {
+                    yearly_task_offset = task_array.size
+                }
+                val current_set = task_array[yearly_task_offset]
+                quest_gallery.addView(current_set.layout1)
+                quest_gallery.addView(current_set.layout2)
+                quest_gallery.addView(current_set.layout3)
+
+            }
+            5 -> {
+                custom_task_offset += int
+                if (custom_task_offset > task_array.size) {
+                    custom_task_offset = 0
+                }
+                if (custom_task_offset < 0) {
+                    custom_task_offset = task_array.size
+                }
+                val current_set = task_array[custom_task_offset]
                 quest_gallery.addView(current_set.layout1)
                 quest_gallery.addView(current_set.layout2)
                 quest_gallery.addView(current_set.layout3)
