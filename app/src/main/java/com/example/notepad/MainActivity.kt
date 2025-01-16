@@ -643,11 +643,11 @@ class MainActivity : AppCompatActivity() {
             1 -> {
                 //daily_offset
                 daily_task_offset += int
-                if (daily_task_offset > task_array.size) {
+                if (daily_task_offset > task_array.size-1) {
                     daily_task_offset = 0
                 }
-                if (daily_task_offset < 0) {
-                    daily_task_offset = task_array.size
+                if (daily_task_offset <= 0) {
+                    daily_task_offset = task_array.size-1
                 }
                 val current_set = task_array[daily_task_offset]
                 quest_gallery.addView(current_set.layout1)
@@ -658,11 +658,11 @@ class MainActivity : AppCompatActivity() {
             2 -> {
                 //weekly_offset
                 weekly_task_offset += int
-                if (weekly_task_offset > task_array.size) {
+                if (weekly_task_offset > task_array.size-1) {
                     weekly_task_offset = 0
                 }
                 if (weekly_task_offset < 0) {
-                    weekly_task_offset = task_array.size
+                    weekly_task_offset = task_array.size-1
                 }
                 val current_set = task_array[weekly_task_offset]
                 quest_gallery.addView(current_set.layout1)
@@ -672,11 +672,11 @@ class MainActivity : AppCompatActivity() {
             }
             3 -> {
                 monthly_task_offset += int
-                if (monthly_task_offset > task_array.size) {
+                if (monthly_task_offset > task_array.size-1) {
                     monthly_task_offset = 0
                 }
                 if (monthly_task_offset < 0) {
-                    monthly_task_offset = task_array.size
+                    monthly_task_offset = task_array.size-1
                 }
                 val current_set = task_array[monthly_task_offset]
                 quest_gallery.addView(current_set.layout1)
@@ -687,11 +687,11 @@ class MainActivity : AppCompatActivity() {
             4 -> {
                 //weekly_offset
                 yearly_task_offset += int
-                if (yearly_task_offset > task_array.size) {
+                if (yearly_task_offset > task_array.size-1) {
                     yearly_task_offset = 0
                 }
                 if (yearly_task_offset < 0) {
-                    yearly_task_offset = task_array.size
+                    yearly_task_offset = task_array.size-1
                 }
                 val current_set = task_array[yearly_task_offset]
                 quest_gallery.addView(current_set.layout1)
@@ -701,11 +701,11 @@ class MainActivity : AppCompatActivity() {
             }
             5 -> {
                 custom_task_offset += int
-                if (custom_task_offset > task_array.size) {
+                if (custom_task_offset > task_array.size-1) {
                     custom_task_offset = 0
                 }
                 if (custom_task_offset < 0) {
-                    custom_task_offset = task_array.size
+                    custom_task_offset = task_array.size-1
                 }
                 val current_set = task_array[custom_task_offset]
                 quest_gallery.addView(current_set.layout1)
