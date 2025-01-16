@@ -112,7 +112,7 @@ class Create_task : DialogFragment(){
                                 true
                             }
                             4 -> {
-
+                                which_file = "custom.csv"
                                 true
                             }
 
