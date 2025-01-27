@@ -106,8 +106,6 @@ class MainActivity : AppCompatActivity() {
             )
         }
 
-
-
         dailyQuestGallery = LinearLayout(this).apply {
             setBackgroundColor(Color.RED)
             id = View.generateViewId()

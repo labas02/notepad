@@ -13,3 +13,5 @@
 .externalNativeBuild
 .cxx
 local.properties
+/.idea/deploymentTargetSelector.xml
+/app/src/main/res/layout/fragment_delete_task.xml
