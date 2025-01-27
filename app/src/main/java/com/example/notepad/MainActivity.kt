@@ -4,8 +4,12 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.os.SystemClock
 import android.view.Gravity
 import android.view.MenuItem
+import android.view.MotionEvent
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.HorizontalScrollView
@@ -32,6 +36,10 @@ class MainActivity : AppCompatActivity() {
     private var monthlyTaskOffset = 0
     private var yearlyTaskOffset = 0
     private var customTaskOffset = 0
+    var pressStartTime = 0L
+    var isHolding = false
+    private lateinit var colorhandler: Handler
+
 
     private lateinit var dailyQuestGallery: LinearLayout
     private lateinit var weeklyQuestGallery: LinearLayout
@@ -65,10 +73,11 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val fileOutputStream: FileOutputStream = this.openFileOutput("daily.csv", Context.MODE_APPEND)
+        val fileOutputStream: FileOutputStream =
+            this.openFileOutput("daily.csv", Context.MODE_APPEND)
 
-                fileOutputStream.write("hello,fuck you".toByteArray())
-                fileOutputStream.write(System.lineSeparator().toByteArray())
+        fileOutputStream.write("hello,fuck you".toByteArray())
+        fileOutputStream.write(System.lineSeparator().toByteArray())
 
 
         fileOutputStream.close()
@@ -101,8 +110,8 @@ class MainActivity : AppCompatActivity() {
             id = View.generateViewId()
             setBackgroundColor(Color.MAGENTA)
             layoutParams = ConstraintLayout.LayoutParams(
-                ConstraintLayout.LayoutParams.MATCH_CONSTRAINT,
-                ConstraintLayout.LayoutParams.MATCH_CONSTRAINT
+                ConstraintLayout.LayoutParams.MATCH_PARENT,
+                ConstraintLayout.LayoutParams.WRAP_CONTENT
             )
         }
 
@@ -111,18 +120,17 @@ class MainActivity : AppCompatActivity() {
             id = View.generateViewId()
             gravity = Gravity.CENTER
             layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
             )
 
         }
-        load_data()
-       daily_layout.addView(dailyQuestGallery)
 
-        val weekly_layout = LinearLayout(this).apply {
+        daily_layout.addView(dailyQuestGallery)
+
+        val weekly_layout = HorizontalScrollView(this).apply {
             id = View.generateViewId()
             setBackgroundColor(Color.MAGENTA)
-            setHorizontalGravity(Gravity.CENTER)
             layoutParams = ConstraintLayout.LayoutParams(
                 ConstraintLayout.LayoutParams.MATCH_PARENT,
                 ConstraintLayout.LayoutParams.WRAP_CONTENT
@@ -130,22 +138,21 @@ class MainActivity : AppCompatActivity() {
         }
 
         weeklyQuestGallery = LinearLayout(this).apply {
-            setBackgroundColor(Color.BLACK)
+            setBackgroundColor(Color.RED)
             id = View.generateViewId()
             gravity = Gravity.CENTER
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.MATCH_PARENT
+                LinearLayout.LayoutParams.WRAP_CONTENT
             )
 
         }
 
         weekly_layout.addView(weeklyQuestGallery)
 
-        val monthly_layout = LinearLayout(this).apply {
+        val monthly_layout = HorizontalScrollView(this).apply {
             id = View.generateViewId()
             setBackgroundColor(Color.MAGENTA)
-            setHorizontalGravity(Gravity.CENTER)
             layoutParams = ConstraintLayout.LayoutParams(
                 ConstraintLayout.LayoutParams.MATCH_PARENT,
                 ConstraintLayout.LayoutParams.WRAP_CONTENT
@@ -155,23 +162,21 @@ class MainActivity : AppCompatActivity() {
 
 
         monthlyQuestGallery = LinearLayout(this).apply {
-            setBackgroundColor(Color.BLACK)
+            setBackgroundColor(Color.RED)
             id = View.generateViewId()
             gravity = Gravity.CENTER
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.MATCH_PARENT
+                LinearLayout.LayoutParams.WRAP_CONTENT
             )
 
         }
-
         monthly_layout.addView(monthlyQuestGallery)
 
 
-        val yearly_layout = LinearLayout(this).apply {
+        val yearly_layout = HorizontalScrollView(this).apply {
             id = View.generateViewId()
             setBackgroundColor(Color.MAGENTA)
-            setHorizontalGravity(Gravity.CENTER)
             layoutParams = ConstraintLayout.LayoutParams(
                 ConstraintLayout.LayoutParams.MATCH_PARENT,
                 ConstraintLayout.LayoutParams.WRAP_CONTENT
@@ -181,12 +186,12 @@ class MainActivity : AppCompatActivity() {
 
 
         yearlyQuestGallery = LinearLayout(this).apply {
-            setBackgroundColor(Color.BLACK)
+            setBackgroundColor(Color.RED)
             id = View.generateViewId()
             gravity = Gravity.CENTER
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.MATCH_PARENT
+                LinearLayout.LayoutParams.WRAP_CONTENT
             )
 
         }
@@ -194,25 +199,22 @@ class MainActivity : AppCompatActivity() {
         yearly_layout.addView(yearlyQuestGallery)
 
 
-        val custom_layout = LinearLayout(this).apply {
+        val custom_layout = HorizontalScrollView(this).apply {
             id = View.generateViewId()
             setBackgroundColor(Color.MAGENTA)
-            setHorizontalGravity(Gravity.CENTER)
             layoutParams = ConstraintLayout.LayoutParams(
                 ConstraintLayout.LayoutParams.MATCH_PARENT,
                 ConstraintLayout.LayoutParams.WRAP_CONTENT
             )
         }
 
-
-
         customQuestGallery = LinearLayout(this).apply {
-            setBackgroundColor(Color.BLACK)
+            setBackgroundColor(Color.RED)
             id = View.generateViewId()
             gravity = Gravity.CENTER
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.MATCH_PARENT
+                LinearLayout.LayoutParams.WRAP_CONTENT
             )
 
         }
@@ -319,45 +321,120 @@ class MainActivity : AppCompatActivity() {
             )
 
         }
+        load_data()
 
-/*
+
         bottom_menu.addView(bottom_button_left)
         bottom_menu.addView(bottom_button_center)
         bottom_menu.addView(bottom_button_right)
 
 
- */
-
         // Add views to the ConstraintLayout
         constraintLayout.addView(topLayout)
         constraintLayout.addView(daily_layout)
-        /*
         constraintLayout.addView(weekly_layout)
         constraintLayout.addView(monthly_layout)
         constraintLayout.addView(yearly_layout)
         constraintLayout.addView(custom_layout)
+
         constraintLayout.addView(bottom_menu)
 
-
-         */
         // Define constraints
         val set = ConstraintSet()
         set.clone(constraintLayout)
 
 
 // Top layout takes 20% height
-     set.constrainPercentHeight(topLayout.id, 0.05f)
+        set.constrainPercentHeight(topLayout.id, 0.05f)
         set.connect(topLayout.id, ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP)
+        set.connect(topLayout.id, ConstraintSet.BOTTOM, daily_layout.id, ConstraintSet.TOP)
         set.connect(topLayout.id, ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START)
         set.connect(topLayout.id, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
 
         //daily layout
-        set.constrainPercentHeight(daily_layout.id,0.4f)
-        set.connect(daily_layout.id,ConstraintSet.TOP,topLayout.id,ConstraintSet.BOTTOM)
-        set.connect(daily_layout.id,ConstraintSet.BOTTOM,ConstraintSet.PARENT_ID,ConstraintSet.BOTTOM)
-        set.connect(daily_layout.id,ConstraintSet.START,ConstraintSet.PARENT_ID,ConstraintSet.START)
-        set.connect(daily_layout.id,ConstraintSet.END,ConstraintSet.PARENT_ID,ConstraintSet.END)
+
+        set.connect(daily_layout.id, ConstraintSet.TOP, topLayout.id, ConstraintSet.BOTTOM)
+        set.connect(daily_layout.id, ConstraintSet.BOTTOM, weekly_layout.id, ConstraintSet.TOP)
+        set.connect(
+            daily_layout.id,
+            ConstraintSet.START,
+            ConstraintSet.PARENT_ID,
+            ConstraintSet.START
+        )
+        set.connect(daily_layout.id, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
+
+        //weekly layout
+        set.connect(weekly_layout.id, ConstraintSet.TOP, daily_layout.id, ConstraintSet.BOTTOM)
+        set.connect(weekly_layout.id, ConstraintSet.BOTTOM, monthly_layout.id, ConstraintSet.TOP)
+        set.connect(
+            weekly_layout.id,
+            ConstraintSet.START,
+            ConstraintSet.PARENT_ID,
+            ConstraintSet.START
+        )
+        set.connect(weekly_layout.id, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
+
+        //monthly layout
+        set.connect(monthly_layout.id, ConstraintSet.TOP, weekly_layout.id, ConstraintSet.BOTTOM)
+        set.connect(monthly_layout.id, ConstraintSet.BOTTOM, yearly_layout.id, ConstraintSet.TOP)
+        set.connect(
+            monthly_layout.id,
+            ConstraintSet.START,
+            ConstraintSet.PARENT_ID,
+            ConstraintSet.START
+        )
+        set.connect(
+            monthly_layout.id,
+            ConstraintSet.END,
+            ConstraintSet.PARENT_ID,
+            ConstraintSet.END
+        )
+
+        //yearly layout
+        set.connect(yearly_layout.id, ConstraintSet.TOP, monthly_layout.id, ConstraintSet.BOTTOM)
+        set.connect(yearly_layout.id, ConstraintSet.BOTTOM, custom_layout.id, ConstraintSet.TOP)
+        set.connect(
+            yearly_layout.id,
+            ConstraintSet.START,
+            ConstraintSet.PARENT_ID,
+            ConstraintSet.START
+        )
+        set.connect(yearly_layout.id, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
+
+        //custom layout
+        set.connect(custom_layout.id, ConstraintSet.TOP, yearly_layout.id, ConstraintSet.BOTTOM)
+        set.connect(
+            custom_layout.id,
+            ConstraintSet.BOTTOM,
+            ConstraintSet.PARENT_ID,
+            ConstraintSet.BOTTOM
+        )
+        set.connect(
+            custom_layout.id,
+            ConstraintSet.START,
+            ConstraintSet.PARENT_ID,
+            ConstraintSet.START
+        )
+        set.connect(custom_layout.id, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
+
+        //bottom menu
+        set.connect(bottom_menu.id, ConstraintSet.TOP, yearly_layout.id, ConstraintSet.BOTTOM)
+        set.connect(
+            bottom_menu.id,
+            ConstraintSet.BOTTOM,
+            ConstraintSet.PARENT_ID,
+            ConstraintSet.BOTTOM
+        )
+        set.connect(
+            bottom_menu.id,
+            ConstraintSet.START,
+            ConstraintSet.PARENT_ID,
+            ConstraintSet.START
+        )
+        set.connect(bottom_menu.id, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
+
         set.applyTo(constraintLayout)
+
 
         // Set the layout as the content view
         setContentView(constraintLayout)
@@ -368,10 +445,28 @@ class MainActivity : AppCompatActivity() {
     private fun load_data() {
 
         dailyQuestGallery.removeAllViews()
-        println(dailyTaskArray.size)
-                //daily_offset
-        for (i in range(0,dailyTaskArray.size)) {
+        for (i in range(0, dailyTaskArray.size)) {
             dailyQuestGallery.addView(dailyTaskArray[i])
+            println("added new")
+        }
+        weeklyQuestGallery.removeAllViews()
+        for (i in range(0, weeklyTaskArray.size)) {
+            weeklyQuestGallery.addView(weeklyTaskArray[i])
+            println("added new")
+        }
+        monthlyQuestGallery.removeAllViews()
+        for (i in range(0, monthlyTaskArray.size)) {
+            monthlyQuestGallery.addView(monthlyTaskArray[i])
+            println("added new")
+        }
+        yearlyQuestGallery.removeAllViews()
+        for (i in range(0, yearlyTaskArray.size)) {
+            yearlyQuestGallery.addView(yearlyTaskArray[i])
+            println("added new")
+        }
+        customQuestGallery.removeAllViews()
+        for (i in range(0, customTaskArray.size)) {
+            customQuestGallery.addView(customTaskArray[i])
             println("added new")
         }
 
@@ -388,7 +483,7 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    @SuppressLint("SuspiciousIndentation")
+    @SuppressLint("SuspiciousIndentation", "ClickableViewAccessibility")
     fun create_set(
         widthRegulation: Double,
         heightRegulation: Double,
@@ -413,58 +508,95 @@ class MainActivity : AppCompatActivity() {
         var data_length = data.size
         println(data_length)
         for (i in range(0, data_length)) {
-                layouts += LinearLayout(this).apply {
-                    setBackgroundColor(Color.GRAY)
-                    orientation = LinearLayout.VERTICAL
-                    layoutParams = LinearLayout.LayoutParams(
-                        (resources.displayMetrics.widthPixels / widthRegulation).toInt(),
-                        (resources.displayMetrics.heightPixels / heightRegulation).toInt()
-                    ).apply {
-                        setMargins(20, 20, 20, 20)
+            layouts += LinearLayout(this).apply {
+                setBackgroundColor(Color.GRAY)
+                orientation = LinearLayout.VERTICAL
+                layoutParams = LinearLayout.LayoutParams(
+                    (resources.displayMetrics.widthPixels / widthRegulation).toInt(),
+                    (resources.displayMetrics.heightPixels / heightRegulation).toInt()
+                ).apply {
+                    setMargins(20, 20, 20, 20)
+                }
+                colorhandler = Handler(Looper.getMainLooper())
+
+                // Define the runnable for updating the hold duration and background color
+                val holdRunnable = object : Runnable {
+                    override fun run() {
+                        if (isHolding) {
+                            val holdDuration = System.currentTimeMillis() - pressStartTime
+                            val progress = (holdDuration / 3000f).coerceIn(0f, 1f).let { easedProgress(it) }
+                            val color = interpolateColor(Color.WHITE, Color.GREEN, progress)
+                            setBackgroundColor(color)
+                            colorhandler.postDelayed(this, 16) // Update every 16ms (~60fps)
+                        }
                     }
+                }
 
-                    addView(
-                        RelativeLayout(this@MainActivity).apply {
-                            layoutParams = LinearLayout.LayoutParams(
-                                LinearLayout.LayoutParams.MATCH_PARENT,
-                                150
-                            )
+                setOnTouchListener { _, event ->
+                    when (event.action) {
+                        MotionEvent.ACTION_DOWN -> {
+                            pressStartTime = System.currentTimeMillis()
+                            isHolding = true
+                            handler.post(holdRunnable)
+                        }
 
-                            addView(TextView(this@MainActivity).apply {
-                                text = data[i][0]
-                                layoutParams = RelativeLayout.LayoutParams(
-                                    RelativeLayout.LayoutParams.WRAP_CONTENT,
-                                    RelativeLayout.LayoutParams.WRAP_CONTENT
-                                ).apply {
-                                    addRule(RelativeLayout.ALIGN_PARENT_TOP)
-                                    addRule(RelativeLayout.ALIGN_PARENT_START)
-                                }
-                            })
 
-                            addView(TextView(this@MainActivity).apply {
-                                text = "X"
-                                textSize = 25f
-                                layoutParams = RelativeLayout.LayoutParams(
-                                    RelativeLayout.LayoutParams.WRAP_CONTENT,
-                                    RelativeLayout.LayoutParams.WRAP_CONTENT
-                                ).apply {
-                                    addRule(RelativeLayout.ALIGN_PARENT_TOP)
-                                    addRule(RelativeLayout.ALIGN_PARENT_END)
-                                }
-                                setOnClickListener {
-                                    val dialog = Delete_task(data, data_type, i)
-                                    dialog.setOnDismissFunction {
-                                        reset_data()
-                                    }
-                                    dialog.show(
-                                        supportFragmentManager,
-                                        "CustomSizeBottomSheetDialog"
-                                    )
-                                }
-                            })
+                        MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                            setBackgroundColor(Color.WHITE)
+                            handler.removeCallbacks(holdRunnable)
+                            // Calculate and display the hold duration when released
+                            if (isHolding) {
+                                val holdDuration = SystemClock.elapsedRealtime() - pressStartTime
+                                println(holdDuration)
+                                isHolding = false
+
+                            }
+                        }
+                    }
+                    true
+                }
+                addView(
+                    RelativeLayout(this@MainActivity).apply {
+                        layoutParams = LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.MATCH_PARENT,
+                            150
+                        )
+
+                        addView(TextView(this@MainActivity).apply {
+                            text = data[i][0]
+                            layoutParams = RelativeLayout.LayoutParams(
+                                RelativeLayout.LayoutParams.WRAP_CONTENT,
+                                RelativeLayout.LayoutParams.WRAP_CONTENT
+                            ).apply {
+                                addRule(RelativeLayout.ALIGN_PARENT_TOP)
+                                addRule(RelativeLayout.ALIGN_PARENT_START)
+                            }
                         })
 
-                }
+                        addView(TextView(this@MainActivity).apply {
+                            text = "X"
+                            textSize = 25f
+                            layoutParams = RelativeLayout.LayoutParams(
+                                RelativeLayout.LayoutParams.WRAP_CONTENT,
+                                RelativeLayout.LayoutParams.WRAP_CONTENT
+                            ).apply {
+                                addRule(RelativeLayout.ALIGN_PARENT_TOP)
+                                addRule(RelativeLayout.ALIGN_PARENT_END)
+                            }
+                            setOnClickListener {
+                                val dialog = Delete_task(data, data_type, i)
+                                dialog.setOnDismissFunction {
+                                    reset_data()
+                                }
+                                dialog.show(
+                                    supportFragmentManager,
+                                    "CustomSizeBottomSheetDialog"
+                                )
+                            }
+                        })
+                    })
+
+            }
 
         }
 
@@ -513,5 +645,30 @@ class MainActivity : AppCompatActivity() {
         return data
 
     }
+    private fun interpolateColor(colorStart: Int, colorEnd: Int, progress: Float): Int {
+        val startRed = Color.red(colorStart)
+        val startGreen = Color.green(colorStart)
+        val startBlue = Color.blue(colorStart)
 
+        val endRed = Color.red(colorEnd)
+        val endGreen = Color.green(colorEnd)
+        val endBlue = Color.blue(colorEnd)
+
+        val red = (startRed + (endRed - startRed) * progress).toInt()
+        val green = (startGreen + (endGreen - startGreen) * progress).toInt()
+        val blue = (startBlue + (endBlue - startBlue) * progress).toInt()
+
+        return Color.rgb(red, green, blue)
+    }
+
+    private fun easedProgress(t: Float): Float {
+        return if (t < 0.5f) {
+            2 * t * t // Ease-in
+        } else {
+            -1 + (4 - 2 * t) * t // Ease-out
+        }
+    }
 }
+
+
+
