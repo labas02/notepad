@@ -7,8 +7,8 @@ import android.os.Bundle
 import android.view.Gravity
 import android.view.MenuItem
 import android.view.View
-import android.widget.CheckBox
 import android.widget.FrameLayout
+import android.widget.HorizontalScrollView
 import android.widget.LinearLayout
 import android.widget.PopupMenu
 import android.widget.RelativeLayout
@@ -39,11 +39,11 @@ class MainActivity : AppCompatActivity() {
     private lateinit var yearlyQuestGallery: LinearLayout
     private lateinit var customQuestGallery: LinearLayout
 
-    private lateinit var dailyTaskArray: MutableList<layouts_set>
-    private lateinit var weeklyTaskArray: MutableList<layouts_set>
-    private lateinit var monthlyTaskArray: MutableList<layouts_set>
-    private lateinit var yearlyTaskArray: MutableList<layouts_set>
-    private lateinit var customTaskArray: MutableList<layouts_set>
+    private lateinit var dailyTaskArray: MutableList<LinearLayout>
+    private lateinit var weeklyTaskArray: MutableList<LinearLayout>
+    private lateinit var monthlyTaskArray: MutableList<LinearLayout>
+    private lateinit var yearlyTaskArray: MutableList<LinearLayout>
+    private lateinit var customTaskArray: MutableList<LinearLayout>
 
     @SuppressLint("RtlHardcoded")
 
@@ -57,36 +57,29 @@ class MainActivity : AppCompatActivity() {
 
 
 
-        move_gallery(0, dailyQuestGallery, dailyTaskArray, 1)
-        move_gallery(0, weeklyQuestGallery, weeklyTaskArray, 2)
-
-              move_gallery(0,monthlyQuestGallery,monthlyTaskArray,3)
-              move_gallery(0,yearlyQuestGallery,yearlyTaskArray,4)
-              move_gallery(0,customQuestGallery,customTaskArray,5)
-
-
-
+        load_data()
     }
 
 
     @SuppressLint("RtlHardcoded")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-/*
-        val fileOutputStream: FileOutputStream = this.openFileOutput("custom.csv", Context.MODE_PRIVATE)
+
+        val fileOutputStream: FileOutputStream = this.openFileOutput("daily.csv", Context.MODE_APPEND)
 
                 fileOutputStream.write("hello,fuck you".toByteArray())
                 fileOutputStream.write(System.lineSeparator().toByteArray())
 
 
         fileOutputStream.close()
-*/
+
 
         dailyTaskArray = create_tasks("daily.csv")
         weeklyTaskArray = create_tasks("weekly.csv")
         monthlyTaskArray = create_tasks("monthly.csv")
         yearlyTaskArray = create_tasks("yearly.csv")
         customTaskArray = create_tasks("custom.csv")
+
 
         val constraintLayout = ConstraintLayout(this).apply {
             layoutParams = ConstraintLayout.LayoutParams(
@@ -104,64 +97,29 @@ class MainActivity : AppCompatActivity() {
             )
         }
 
-        val daily_layout = LinearLayout(this).apply {
+        val daily_layout = HorizontalScrollView(this).apply {
             id = View.generateViewId()
             setBackgroundColor(Color.MAGENTA)
-            setHorizontalGravity(Gravity.CENTER)
             layoutParams = ConstraintLayout.LayoutParams(
-                ConstraintLayout.LayoutParams.MATCH_PARENT,
-                ConstraintLayout.LayoutParams.WRAP_CONTENT
+                ConstraintLayout.LayoutParams.MATCH_CONSTRAINT,
+                ConstraintLayout.LayoutParams.MATCH_CONSTRAINT
             )
         }
 
 
 
         dailyQuestGallery = LinearLayout(this).apply {
-            setBackgroundColor(Color.BLACK)
+            setBackgroundColor(Color.RED)
             id = View.generateViewId()
             gravity = Gravity.CENTER
             layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.MATCH_PARENT
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
             )
 
         }
-
-        val daily_left_arrow = LinearLayout(this).apply {
-            setBackgroundColor(Color.BLUE)
-            id = View.generateViewId()
-            gravity = Gravity.START
-            layoutParams = ConstraintLayout.LayoutParams(
-                (context.resources.displayMetrics.widthPixels * 0.15).toInt(),
-                ConstraintLayout.LayoutParams.MATCH_PARENT
-            )
-
-            setOnClickListener {
-                this@MainActivity.move_gallery(-1, dailyQuestGallery, dailyTaskArray, 1)
-            }
-
-        }
-
-        val daily_right_arrow = LinearLayout(this).apply {
-            setBackgroundColor(Color.BLUE)
-            id = View.generateViewId()
-            gravity = Gravity.START
-            layoutParams = ConstraintLayout.LayoutParams(
-                (context.resources.displayMetrics.widthPixels * 0.15).toInt(),
-                ConstraintLayout.LayoutParams.MATCH_PARENT
-            )
-
-            setOnClickListener {
-                this@MainActivity.move_gallery(1, dailyQuestGallery, dailyTaskArray, 1)
-            }
-
-        }
-
-        move_gallery(0, dailyQuestGallery, dailyTaskArray, 1)
-
-        daily_layout.addView(daily_left_arrow)
-        daily_layout.addView(dailyQuestGallery)
-        daily_layout.addView(daily_right_arrow)
+        load_data()
+       daily_layout.addView(dailyQuestGallery)
 
         val weekly_layout = LinearLayout(this).apply {
             id = View.generateViewId()
@@ -184,43 +142,7 @@ class MainActivity : AppCompatActivity() {
 
         }
 
-        val weekly_left_arrow = LinearLayout(this).apply {
-            setBackgroundColor(Color.BLUE)
-            id = View.generateViewId()
-            gravity = Gravity.START
-            layoutParams = ConstraintLayout.LayoutParams(
-                (context.resources.displayMetrics.widthPixels * 0.15).toInt(),
-                ConstraintLayout.LayoutParams.MATCH_PARENT
-            )
-
-            setOnClickListener {
-                this@MainActivity.move_gallery(-1, weeklyQuestGallery, weeklyTaskArray, 2)
-            }
-
-        }
-
-        val weekly_right_arrow = LinearLayout(this).apply {
-            setBackgroundColor(Color.BLUE)
-            id = View.generateViewId()
-            gravity = Gravity.START
-            layoutParams = ConstraintLayout.LayoutParams(
-                (context.resources.displayMetrics.widthPixels * 0.15).toInt(),
-                ConstraintLayout.LayoutParams.MATCH_PARENT
-            )
-
-            setOnClickListener {
-                this@MainActivity.move_gallery(1, weeklyQuestGallery, weeklyTaskArray, 2)
-            }
-
-        }
-
-
-
-        move_gallery(0, weeklyQuestGallery, weeklyTaskArray, 2)
-
-        weekly_layout.addView(weekly_left_arrow)
         weekly_layout.addView(weeklyQuestGallery)
-        weekly_layout.addView(weekly_right_arrow)
 
         val monthly_layout = LinearLayout(this).apply {
             id = View.generateViewId()
@@ -245,41 +167,8 @@ class MainActivity : AppCompatActivity() {
 
         }
 
-        val monthly_left_arrow = LinearLayout(this).apply {
-            setBackgroundColor(Color.BLUE)
-            id = View.generateViewId()
-            gravity = Gravity.START
-            layoutParams = ConstraintLayout.LayoutParams(
-                (context.resources.displayMetrics.widthPixels * 0.15).toInt(),
-                ConstraintLayout.LayoutParams.MATCH_PARENT
-            )
-
-            setOnClickListener {
-                this@MainActivity.move_gallery(-1, monthlyQuestGallery, monthlyTaskArray, 3)
-            }
-
-        }
-
-        val monthly_right_arrow = LinearLayout(this).apply {
-            setBackgroundColor(Color.BLUE)
-            id = View.generateViewId()
-            gravity = Gravity.START
-            layoutParams = ConstraintLayout.LayoutParams(
-                (context.resources.displayMetrics.widthPixels * 0.15).toInt(),
-                ConstraintLayout.LayoutParams.MATCH_PARENT
-            )
-
-            setOnClickListener {
-                this@MainActivity.move_gallery(1, monthlyQuestGallery, monthlyTaskArray, 3)
-            }
-
-        }
-
-        move_gallery(0, monthlyQuestGallery, monthlyTaskArray, 3)
-
-        monthly_layout.addView(monthly_left_arrow)
         monthly_layout.addView(monthlyQuestGallery)
-        monthly_layout.addView(monthly_right_arrow)
+
 
         val yearly_layout = LinearLayout(this).apply {
             id = View.generateViewId()
@@ -304,41 +193,8 @@ class MainActivity : AppCompatActivity() {
 
         }
 
-        val yearly_left_arrow = LinearLayout(this).apply {
-            setBackgroundColor(Color.BLUE)
-            id = View.generateViewId()
-            gravity = Gravity.START
-            layoutParams = ConstraintLayout.LayoutParams(
-                (context.resources.displayMetrics.widthPixels * 0.15).toInt(),
-                ConstraintLayout.LayoutParams.MATCH_PARENT
-            )
-
-            setOnClickListener {
-                this@MainActivity.move_gallery(-1, yearlyQuestGallery, yearlyTaskArray, 4)
-            }
-
-        }
-
-        val yearly_right_arrow = LinearLayout(this).apply {
-            setBackgroundColor(Color.BLUE)
-            id = View.generateViewId()
-            gravity = Gravity.START
-            layoutParams = ConstraintLayout.LayoutParams(
-                (context.resources.displayMetrics.widthPixels * 0.15).toInt(),
-                ConstraintLayout.LayoutParams.MATCH_PARENT
-            )
-
-            setOnClickListener {
-                this@MainActivity.move_gallery(1, yearlyQuestGallery, yearlyTaskArray, 4)
-            }
-
-        }
-
-        move_gallery(0, yearlyQuestGallery, yearlyTaskArray, 4)
-
-        yearly_layout.addView(yearly_left_arrow)
         yearly_layout.addView(yearlyQuestGallery)
-        yearly_layout.addView(yearly_right_arrow)
+
 
         val custom_layout = LinearLayout(this).apply {
             id = View.generateViewId()
@@ -362,42 +218,8 @@ class MainActivity : AppCompatActivity() {
             )
 
         }
-
-        val custom_left_arrow = LinearLayout(this).apply {
-            setBackgroundColor(Color.BLUE)
-            id = View.generateViewId()
-            gravity = Gravity.START
-            layoutParams = ConstraintLayout.LayoutParams(
-                (context.resources.displayMetrics.widthPixels * 0.15).toInt(),
-                ConstraintLayout.LayoutParams.MATCH_PARENT
-            )
-
-            setOnClickListener {
-                this@MainActivity.move_gallery(-1, customQuestGallery, customTaskArray, 5)
-            }
-
-        }
-
-        val custom_right_arrow = LinearLayout(this).apply {
-            setBackgroundColor(Color.BLUE)
-            id = View.generateViewId()
-            gravity = Gravity.START
-            layoutParams = ConstraintLayout.LayoutParams(
-                (context.resources.displayMetrics.widthPixels * 0.15).toInt(),
-                ConstraintLayout.LayoutParams.MATCH_PARENT
-            )
-
-            setOnClickListener {
-                this@MainActivity.move_gallery(1, customQuestGallery, customTaskArray, 5)
-            }
-
-        }
-
-        move_gallery(0, customQuestGallery, customTaskArray, 5)
-
-        custom_layout.addView(custom_left_arrow)
         custom_layout.addView(customQuestGallery)
-        custom_layout.addView(custom_right_arrow)
+
 
         LinearLayout(this).apply {
             id = View.generateViewId()
@@ -500,118 +322,43 @@ class MainActivity : AppCompatActivity() {
 
         }
 
+/*
         bottom_menu.addView(bottom_button_left)
         bottom_menu.addView(bottom_button_center)
         bottom_menu.addView(bottom_button_right)
 
 
+ */
+
         // Add views to the ConstraintLayout
         constraintLayout.addView(topLayout)
         constraintLayout.addView(daily_layout)
+        /*
         constraintLayout.addView(weekly_layout)
         constraintLayout.addView(monthly_layout)
         constraintLayout.addView(yearly_layout)
         constraintLayout.addView(custom_layout)
         constraintLayout.addView(bottom_menu)
 
+
+         */
         // Define constraints
         val set = ConstraintSet()
         set.clone(constraintLayout)
 
 
 // Top layout takes 20% height
-        set.constrainPercentHeight(topLayout.id, 0.05f)
+     set.constrainPercentHeight(topLayout.id, 0.05f)
         set.connect(topLayout.id, ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP)
         set.connect(topLayout.id, ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START)
         set.connect(topLayout.id, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
-//daily layout
-        set.constrainPercentHeight(daily_layout.id, 0.20f)
-        set.constrainPercentWidth(daily_layout.id, 1f)
-        set.connect(daily_layout.id, ConstraintSet.TOP, topLayout.id, ConstraintSet.BOTTOM)
-        set.connect(
-            daily_layout.id,
-            ConstraintSet.START,
-            ConstraintSet.PARENT_ID,
-            ConstraintSet.START
-        )
-        set.connect(daily_layout.id, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
 
-//weekly layout
-        set.constrainPercentHeight(weekly_layout.id, 0.20f)
-        set.constrainPercentWidth(weekly_layout.id, 1f)
-        set.connect(weekly_layout.id, ConstraintSet.TOP, daily_layout.id, ConstraintSet.BOTTOM)
-        set.connect(
-            weekly_layout.id,
-            ConstraintSet.START,
-            ConstraintSet.PARENT_ID,
-            ConstraintSet.START
-        )
-        set.connect(weekly_layout.id, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
-        //monthly
-        set.constrainPercentHeight(monthly_layout.id, 0.20f)
-        set.constrainPercentWidth(monthly_layout.id, 1f)
-        set.connect(monthly_layout.id, ConstraintSet.TOP, weekly_layout.id, ConstraintSet.BOTTOM)
-        set.connect(
-            monthly_layout.id,
-            ConstraintSet.START,
-            ConstraintSet.PARENT_ID,
-            ConstraintSet.START
-        )
-        set.connect(monthly_layout.id, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
-        //yearly
-        set.constrainPercentHeight(yearly_layout.id, 0.20f)
-        set.constrainPercentWidth(yearly_layout.id, 1f)
-        set.connect(yearly_layout.id, ConstraintSet.TOP, monthly_layout.id, ConstraintSet.BOTTOM)
-        set.connect(
-            yearly_layout.id,
-            ConstraintSet.START,
-            ConstraintSet.PARENT_ID,
-            ConstraintSet.START
-        )
-        set.connect(yearly_layout.id, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
-        //custom
-        set.constrainPercentHeight(custom_layout.id, 0.20f)
-        set.constrainPercentWidth(custom_layout.id, 1f)
-        set.connect(custom_layout.id, ConstraintSet.TOP, yearly_layout.id, ConstraintSet.BOTTOM)
-        set.connect(
-            custom_layout.id,
-            ConstraintSet.START,
-            ConstraintSet.PARENT_ID,
-            ConstraintSet.START
-        )
-        set.connect(custom_layout.id, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
-
-        // Bottom layout
-        set.connect(bottom_menu.id, ConstraintSet.TOP, custom_layout.id, ConstraintSet.BOTTOM)
-        set.connect(
-            bottom_menu.id,
-            ConstraintSet.START,
-            ConstraintSet.PARENT_ID,
-            ConstraintSet.START
-        )
-        set.connect(bottom_menu.id, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
-        set.connect(
-            bottom_menu.id,
-            ConstraintSet.BOTTOM,
-            ConstraintSet.PARENT_ID,
-            ConstraintSet.BOTTOM
-        )
-        //set.constrainPercentWidth(bottomLeftLayout.id, 0.5f) // Half the width
-
-
-        // button menu
-        //set.constrainPercentWidth(button_layout.id,0.2f)
-        set.connect(
-            button_layout.id,
-            ConstraintSet.START,
-            ConstraintSet.PARENT_ID,
-            ConstraintSet.START
-        )
-        set.connect(button_layout.id, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
-        set.connect(button_layout.id, ConstraintSet.BOTTOM, daily_layout.id, ConstraintSet.TOP)
-        set.connect(button_layout.id, ConstraintSet.TOP, ConstraintSet.PARENT_ID, ConstraintSet.TOP)
-
-        // Apply constraints
+        //daily layout
+        set.constrainPercentHeight(daily_layout.id,0.4f)
+        set.connect(daily_layout.id,ConstraintSet.TOP,topLayout.id,ConstraintSet.BOTTOM)
+        set.connect(daily_layout.id,ConstraintSet.BOTTOM,ConstraintSet.PARENT_ID,ConstraintSet.BOTTOM)
+        set.connect(daily_layout.id,ConstraintSet.START,ConstraintSet.PARENT_ID,ConstraintSet.START)
+        set.connect(daily_layout.id,ConstraintSet.END,ConstraintSet.PARENT_ID,ConstraintSet.END)
         set.applyTo(constraintLayout)
 
         // Set the layout as the content view
@@ -620,105 +367,25 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    private fun move_gallery(
-        int: Int,
-        quest_gallery: LinearLayout,
-        task_array: MutableList<layouts_set>,
-        which_array: Int
-    ) {
-        println("moved")
-        quest_gallery.removeAllViews()
-        when (which_array) {
-            1 -> {
+    private fun load_data() {
+
+        dailyQuestGallery.removeAllViews()
+        println(dailyTaskArray.size)
                 //daily_offset
-                dailyTaskOffset += int
-                if (dailyTaskOffset > task_array.size-1) {
-                    dailyTaskOffset = 0
-                }
-                if (dailyTaskOffset <= 0) {
-                    dailyTaskOffset = task_array.size-1
-                }
-                val current_set = task_array[dailyTaskOffset]
-                quest_gallery.addView(current_set.layout1)
-                quest_gallery.addView(current_set.layout2)
-                quest_gallery.addView(current_set.layout3)
-            }
-
-            2 -> {
-                //weekly_offset
-                weeklyTaskOffset += int
-                if (weeklyTaskOffset > task_array.size-1) {
-                    weeklyTaskOffset = 0
-                }
-                if (weeklyTaskOffset < 0) {
-                    weeklyTaskOffset = task_array.size-1
-                }
-                val current_set = task_array[weeklyTaskOffset]
-                quest_gallery.addView(current_set.layout1)
-                quest_gallery.addView(current_set.layout2)
-                quest_gallery.addView(current_set.layout3)
-
-            }
-            3 -> {
-                monthlyTaskOffset += int
-                if (monthlyTaskOffset > task_array.size-1) {
-                    monthlyTaskOffset = 0
-                }
-                if (monthlyTaskOffset < 0) {
-                    monthlyTaskOffset = task_array.size-1
-                }
-                val current_set = task_array[monthlyTaskOffset]
-                quest_gallery.addView(current_set.layout1)
-                quest_gallery.addView(current_set.layout2)
-                quest_gallery.addView(current_set.layout3)
-
-            }
-            4 -> {
-                //weekly_offset
-                yearlyTaskOffset += int
-                if (yearlyTaskOffset > task_array.size-1) {
-                    yearlyTaskOffset = 0
-                }
-                if (yearlyTaskOffset < 0) {
-                    yearlyTaskOffset = task_array.size-1
-                }
-                val current_set = task_array[yearlyTaskOffset]
-                quest_gallery.addView(current_set.layout1)
-                quest_gallery.addView(current_set.layout2)
-                quest_gallery.addView(current_set.layout3)
-
-            }
-            5 -> {
-                customTaskOffset += int
-                if (customTaskOffset > task_array.size-1) {
-                    customTaskOffset = 0
-                }
-                if (customTaskOffset < 0) {
-                    customTaskOffset = task_array.size-1
-                }
-                val current_set = task_array[customTaskOffset]
-                quest_gallery.addView(current_set.layout1)
-                quest_gallery.addView(current_set.layout2)
-                quest_gallery.addView(current_set.layout3)
-
-            }
-
+        for (i in range(0,dailyTaskArray.size)) {
+            dailyQuestGallery.addView(dailyTaskArray[i])
+            println("added new")
         }
 
     }
 
-    data class layouts_set(
-        val layout1: LinearLayout,
-        val layout2: LinearLayout,
-        val layout3: LinearLayout
-    )
-
-    private fun create_tasks(which_task: String): MutableList<layouts_set> {
-        val tasks: MutableList<layouts_set>
+    private fun create_tasks(which_task: String): MutableList<LinearLayout> {
+        val tasks: MutableList<LinearLayout>
         val width_regulation = 4.5
         val height_regulation = 7.8
 
         tasks = create_set(width_regulation, height_regulation, which_task)
+        println(tasks.toString())
         return tasks
     }
 
@@ -728,8 +395,8 @@ class MainActivity : AppCompatActivity() {
         widthRegulation: Double,
         heightRegulation: Double,
         data_type: String
-    ): MutableList<layouts_set> {
-        var layouts = emptyArray<LinearLayout>()
+    ): MutableList<LinearLayout> {
+        var layouts = mutableListOf<LinearLayout>()
         var data = read_from_file(data_type)
         if (data.isNullOrEmpty()) {
             println("is empty")
@@ -746,13 +413,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         var data_length = data.size
-        val sets = mutableListOf<layouts_set>() // List to store all daily layout sets
-        while (data_length % 3 != 0) {
-            data_length += 1
-        }
         println(data_length)
         for (i in range(0, data_length)) {
-            if (i < data.size) {
                 layouts += LinearLayout(this).apply {
                     setBackgroundColor(Color.GRAY)
                     orientation = LinearLayout.VERTICAL
@@ -804,52 +466,11 @@ class MainActivity : AppCompatActivity() {
                             })
                         })
 
-
-                    val check_box = CheckBox(this@MainActivity).apply {
-                        text = "complete"
-                        isChecked = false
-                    }
                 }
 
-                if (layouts.size >= 3) {
-                    sets.add(layouts_set(layouts[0], layouts[1], layouts[2]))
-                    layouts = emptyArray<LinearLayout>()
-                }
-            } else {
-                layouts += LinearLayout(this).apply {
-                    setBackgroundColor(Color.GRAY)
-                    orientation = LinearLayout.VERTICAL
-                    layoutParams = LinearLayout.LayoutParams(
-                        (resources.displayMetrics.widthPixels / widthRegulation).toInt(),
-                        (resources.displayMetrics.heightPixels / heightRegulation).toInt()
-                    ).apply {
-                        setMargins(20, 20, 20, 20)
-                    }
-
-                    addView(TextView(this@MainActivity).apply {
-                        text = ""
-                        textSize = 35F
-                        textAlignment = View.TEXT_ALIGNMENT_CENTER
-                        layoutParams = LinearLayout.LayoutParams(
-                            LinearLayout.LayoutParams.MATCH_PARENT,
-                            150
-                        )
-                    })
-
-                    addView(CheckBox(this@MainActivity).apply {
-                        text = ""
-                        isChecked = false
-                    })
-                }
-
-                if (layouts.size >= 3) {
-                    sets.add(layouts_set(layouts[0], layouts[1], layouts[2]))
-                    layouts = emptyArray<LinearLayout>()
-                }
-            }
         }
 
-        return sets
+        return layouts
     }
 
 
