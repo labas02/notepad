@@ -91,6 +91,8 @@ class MainActivity : AppCompatActivity() {
 
 
         val constraintLayout = ConstraintLayout(this).apply {
+            setBackgroundColor(Color.BLACK)
+
             layoutParams = ConstraintLayout.LayoutParams(
                 ConstraintLayout.LayoutParams.MATCH_PARENT,
                 ConstraintLayout.LayoutParams.MATCH_PARENT
@@ -106,6 +108,12 @@ class MainActivity : AppCompatActivity() {
             )
         }
 
+        val quest_layout = LinearLayout(this).apply {
+            id = ConstraintLayout.generateViewId()
+            layoutParams = ConstraintLayout.LayoutParams(
+                ConstraintLayout.LayoutParams.MATCH_CONSTRAINT,
+                ConstraintLayout.LayoutParams.MATCH_CONSTRAINT)
+        }
         val daily_layout = HorizontalScrollView(this).apply {
             id = View.generateViewId()
             setBackgroundColor(Color.MAGENTA)
@@ -331,11 +339,14 @@ class MainActivity : AppCompatActivity() {
 
         // Add views to the ConstraintLayout
         constraintLayout.addView(topLayout)
-        constraintLayout.addView(daily_layout)
-        constraintLayout.addView(weekly_layout)
-        constraintLayout.addView(monthly_layout)
-        constraintLayout.addView(yearly_layout)
-        constraintLayout.addView(custom_layout)
+
+        quest_layout.addView(daily_layout)
+        quest_layout.addView(weekly_layout)
+        quest_layout.addView(monthly_layout)
+            quest_layout.addView(yearly_layout)
+        quest_layout.addView(custom_layout)
+
+        constraintLayout.addView(quest_layout)
 
         constraintLayout.addView(bottom_menu)
 
@@ -351,74 +362,14 @@ class MainActivity : AppCompatActivity() {
         set.connect(topLayout.id, ConstraintSet.START, ConstraintSet.PARENT_ID, ConstraintSet.START)
         set.connect(topLayout.id, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
 
-        //daily layout
-
-        set.connect(daily_layout.id, ConstraintSet.TOP, topLayout.id, ConstraintSet.BOTTOM)
-        set.connect(daily_layout.id, ConstraintSet.BOTTOM, weekly_layout.id, ConstraintSet.TOP)
-        set.connect(
-            daily_layout.id,
-            ConstraintSet.START,
-            ConstraintSet.PARENT_ID,
-            ConstraintSet.START
-        )
-        set.connect(daily_layout.id, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
-
-        //weekly layout
-        set.connect(weekly_layout.id, ConstraintSet.TOP, daily_layout.id, ConstraintSet.BOTTOM)
-        set.connect(weekly_layout.id, ConstraintSet.BOTTOM, monthly_layout.id, ConstraintSet.TOP)
-        set.connect(
-            weekly_layout.id,
-            ConstraintSet.START,
-            ConstraintSet.PARENT_ID,
-            ConstraintSet.START
-        )
-        set.connect(weekly_layout.id, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
-
-        //monthly layout
-        set.connect(monthly_layout.id, ConstraintSet.TOP, weekly_layout.id, ConstraintSet.BOTTOM)
-        set.connect(monthly_layout.id, ConstraintSet.BOTTOM, yearly_layout.id, ConstraintSet.TOP)
-        set.connect(
-            monthly_layout.id,
-            ConstraintSet.START,
-            ConstraintSet.PARENT_ID,
-            ConstraintSet.START
-        )
-        set.connect(
-            monthly_layout.id,
-            ConstraintSet.END,
-            ConstraintSet.PARENT_ID,
-            ConstraintSet.END
-        )
-
-        //yearly layout
-        set.connect(yearly_layout.id, ConstraintSet.TOP, monthly_layout.id, ConstraintSet.BOTTOM)
-        set.connect(yearly_layout.id, ConstraintSet.BOTTOM, custom_layout.id, ConstraintSet.TOP)
-        set.connect(
-            yearly_layout.id,
-            ConstraintSet.START,
-            ConstraintSet.PARENT_ID,
-            ConstraintSet.START
-        )
-        set.connect(yearly_layout.id, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
-
-        //custom layout
-        set.connect(custom_layout.id, ConstraintSet.TOP, yearly_layout.id, ConstraintSet.BOTTOM)
-        set.connect(
-            custom_layout.id,
-            ConstraintSet.BOTTOM,
-            ConstraintSet.PARENT_ID,
-            ConstraintSet.BOTTOM
-        )
-        set.connect(
-            custom_layout.id,
-            ConstraintSet.START,
-            ConstraintSet.PARENT_ID,
-            ConstraintSet.START
-        )
-        set.connect(custom_layout.id, ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END)
-
+      //quest layout
+        set.connect(quest_layout.id,ConstraintLayout.LayoutParams.TOP,topLayout.id,ConstraintLayout.LayoutParams.BOTTOM)
+        set.connect(quest_layout.id,ConstraintLayout.LayoutParams.BOTTOM,bottom_menu.id, ConstraintLayout.LayoutParams.BOTTOM)
+        set.connect(quest_layout.id,ConstraintLayout.LayoutParams.START,ConstraintLayout.LayoutParams.PARENT_ID,ConstraintLayout.LayoutParams.START)
+        set.connect(quest_layout.id,ConstraintLayout.LayoutParams.END,ConstraintLayout.LayoutParams.PARENT_ID,ConstraintLayout.LayoutParams.END)
         //bottom menu
-        set.connect(bottom_menu.id, ConstraintSet.TOP, yearly_layout.id, ConstraintSet.BOTTOM)
+        set.constrainPercentHeight(bottom_menu.id,0.08f)
+        set.connect(bottom_menu.id, ConstraintSet.TOP, custom_layout.id, ConstraintSet.BOTTOM)
         set.connect(
             bottom_menu.id,
             ConstraintSet.BOTTOM,
@@ -474,8 +425,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun create_tasks(which_task: String): MutableList<LinearLayout> {
         val tasks: MutableList<LinearLayout>
-        val width_regulation = 4.5
-        val height_regulation = 7.8
+        val width_regulation = 4.0
+        val height_regulation = 7.0
 
         tasks = create_set(width_regulation, height_regulation, which_task)
         println(tasks.toString())
